@@ -1,0 +1,23 @@
+{
+  "name": "timesheet_generator",
+  "version": "1.0.0",
+  "description": "htmlで書かれた時間割の作成用ツール",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldTOUFU/timesheet_generator.git"
+  },
+  "keywords": [],
+  "author": "ARAKI Masanori",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/coldTOUFU/timesheet_generator/issues"
+  },
+  "homepage": "https://github.com/coldTOUFU/timesheet_generator#readme",
+  "dependencies": {
+    "ts-node": "^10.7.0"
+  }
+}
