@@ -4,7 +4,7 @@
   "description": "htmlで書かれた時間割の作成用ツール",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/coldTOUFU/timesheet_generator#readme",
   "dependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
     "ts-node": "^10.7.0"
   }
 }
