@@ -4,7 +4,7 @@
   "description": "htmlで書かれた時間割の作成用ツール",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

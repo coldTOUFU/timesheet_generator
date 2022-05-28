@@ -15,51 +15,36 @@ export namespace TimeTable {
 
   export class Table {
     private dayOfWeeks: Const.DayOfWeek[];
-    private periods: number[];
+    private periodMax: number;
     private fields: TimeTable.Field[];
 
-    constructor(dayOfWeeks: Const.DayOfWeek[], periods: number[]) {
+    constructor(dayOfWeeks: Const.DayOfWeek[], periodMax: number) {
+      if (dayOfWeeks.length <= 0) {
+        dayOfWeeks = [Const.MON, Const.TUE, Const.WED, Const.THU, Const.FRI];
+      }
+      if (periodMax <= 0 || periodMax > 10) {
+        periodMax = 5;
+      }
+
       this.dayOfWeeks = dayOfWeeks;
-      this.periods = periods;
-      this.fields = Array(dayOfWeeks.length * periods.length);
+      this.periodMax = periodMax;
+      this.fields = Array(dayOfWeeks.length * periodMax);
       for (const dow of dayOfWeeks) {
-        for (const p of periods) {
+        for (let p = 0; p < periodMax; p++) {
           this.fields[p * dayOfWeeks.length + dow] = this.initField();
         }
       }
     }
 
-    public to_node(): Node {
-      const n = document.createElement("table");
-
+    public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
       /* ヘッダの作成 */
-      const header = document.createElement("thead");
-      const dowRow = document.createElement("tr");
-      dowRow.appendChild(document.createElement("th")); // 左上の空白。
-      for (const dow of this.dayOfWeeks) {
-        const th = document.createElement("th");
-        th.textContent = Const.DAY_OF_WEEK_CHARS[dow];
-        dowRow.appendChild(th);
-      }
-      header.appendChild(dowRow);
-      n.appendChild(header);
+      const dowHeader = this.dayOfWeeks.map(dow => Const.DAY_OF_WEEK_CHARS[dow]);
+      const periodHeader = this.range(1, this.periodMax).map(i => String(i));
 
       /* ボディの作成 */
-      /* 各行に対し、まず左端の時限を表すフィールドを追加、次いで各コマを表すフィールドを追加。 */
-      const body = document.createElement("tbody");
-      for (const p of this.periods) {
-        const row = document.createElement("tr");
-        const dowField = document.createElement("th");
-        /* TODO: 時限を表すフィールドを作る。 */
-        dowField.textContent = String(p);
-        row.appendChild(dowField);
-        for (const dow of this.dayOfWeeks) {
-          row.appendChild(this.createTdNodeFrom(this.fields[p * this.dayOfWeeks.length + dow]));
-        }
-      }
-      n.appendChild(body);
+      const body = JSON.parse(JSON.stringify(this.fields));
 
-      return n;
+      return { "dowHeader": dowHeader, "periodHeader": periodHeader, "body": body };
     }
 
     private initField(): TimeTable.Field {
@@ -69,12 +54,12 @@ export namespace TimeTable {
       }
     }
 
-    private createTdNodeFrom(field: Field): Node {
-      const td = document.createElement("td");
-      const name = document.createElement("h3");
-      name.textContent = field.name;
-      td.appendChild(name);
-      return td;
+    private range(min: number, max: number): number[] {
+      const r = [];
+      for (let i = min; i <= max; i++) {
+        r.push(i);
+      }
+      return r;
     }
   }
 }
