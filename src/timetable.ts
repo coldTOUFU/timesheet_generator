@@ -5,7 +5,7 @@ export namespace TimeTable {
     name:   string,
     value:  string,
     isLink: boolean,
-    ref:    string | null
+    ref:    string
   }
 
   export type Field = {
@@ -16,6 +16,7 @@ export namespace TimeTable {
   export class Table {
     private dayOfWeeks: Const.DayOfWeek[];
     private periodMax: number;
+    private fieldTemplete: TimeTable.Field;
     private fields: TimeTable.Field[];
 
     constructor(dayOfWeeks: Const.DayOfWeek[], periodMax: number) {
@@ -28,12 +29,34 @@ export namespace TimeTable {
 
       this.dayOfWeeks = dayOfWeeks;
       this.periodMax = periodMax;
+      this.fieldTemplete = this.initField();
       this.fields = Array(dayOfWeeks.length * periodMax);
       for (const dow of dayOfWeeks) {
         for (let p = 0; p < periodMax; p++) {
           this.fields[p * dayOfWeeks.length + dow] = this.initField();
         }
       }
+    }
+
+    public changeFieldStructure(items: Item[]) {
+      /* ひな形用itemsに固有の値が入っているかもしれないので、固有の値はそぎ落とす。 */
+      const item_tmpl = items.map(i => {
+        return {
+          "name": i["name"],
+          "value": "",
+          "isLink": i["isLink"],
+          "ref": ""
+        }
+      });
+
+      for (const dow of this.dayOfWeeks) {
+        for (let p = 0; p < this.periodMax; p++) {
+          this.fields[p * this.dayOfWeeks.length + dow] = JSON.parse(JSON.stringify(item_tmpl));
+        }
+      }
+    }
+
+    public setField(f: TimeTable.Field, dow: Const.DayOfWeek, period: number) {
     }
 
     public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
