@@ -160,12 +160,150 @@ describe("TimeTableクラスの初期化", () => {
   });
 });
 
-describe("フィールド構造の設定", () => {
+describe("フィールドのアイテム構造の設定", () => {
   describe("正常な入力", () => {
+    describe("項目名が空文字列の場合", () => {
+      const table = new TimeTable.Table([], 5);
+      const expectedItem: TimeTable.Item = {
+        "name":   "",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      };
+      table.changeItemStructure([expectedItem]);
+      const tableObj = table.toObject();
+
+      it("項目名が空文字列になる", () => {
+        tableObj.body.forEach(field => {
+          const items = field.items;
+          assert.lengthOf(items, 1);
+          assert.deepEqual(items, [{
+            "name":   "",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }])
+        });
+      });
+    })
+
     describe("項目が空の場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([]);
+      const tableObj = table.toObject();
+
+      it("項目が空になる", () => {
+        tableObj.body.forEach(field => {
+          const items = field.items;
+          assert.lengthOf(items, 0);
+          assert.deepEqual(items, [])
+        });
+      });
     });
 
-    describe("通常の場合", () => {
+    describe("項目が1つの場合", () => {
+      const table = new TimeTable.Table([], 5);
+      const expectedItem: TimeTable.Item = {
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      };
+      table.changeItemStructure([expectedItem]);
+      const tableObj = table.toObject();
+
+      it("項目が入力通りになる", () => {
+        tableObj.body.forEach(field => {
+          const items = field.items;
+          assert.lengthOf(items, 1);
+          assert.deepEqual(items, [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }])
+        });
+      });
+    });
+
+    describe("項目が3つの場合", () => {
+      const table = new TimeTable.Table([], 5);
+      const expectedItems: TimeTable.Item[] = [{
+        "name":   "なんか項目1",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }, {
+        "name":   "なんか項目2",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }, {
+        "name":   "なんか項目3",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]
+      table.changeItemStructure(expectedItems);
+      const tableObj = table.toObject();
+
+      it("項目が入力通りになる", () => {
+        tableObj.body.forEach(field => {
+          const items = field.items;
+          assert.lengthOf(items, 3);
+          assert.deepEqual(items, [{
+            "name":   "なんか項目1",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }, {
+            "name":   "なんか項目2",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }, {
+            "name":   "なんか項目3",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }])
+        });
+      });
+    });
+
+    describe("isLinkの設定が項目によって異なる場合", () => {
+      const table = new TimeTable.Table([], 5);
+      const expectedItems = [{
+          "name":   "",
+          "value":  "",
+          "isLink": false,
+          "ref":    ""
+      }, {
+          "name":   "",
+          "value":  "",
+          "isLink": true,
+          "ref":    ""
+      }];
+      table.changeItemStructure(expectedItems);
+      const tableObj = table.toObject();
+
+      it("項目が入力通りになる", () => {
+        tableObj.body.forEach(field => {
+          const items = field.items;
+          assert.lengthOf(items, 3);
+          assert.deepEqual(items, [{
+            "name":   "",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }, {
+            "name":   "",
+            "value":  "",
+            "isLink": true,
+            "ref":    ""
+        }]);
+      });
+    });
     });
   });
 });
@@ -173,61 +311,246 @@ describe("フィールド構造の設定", () => {
 describe("フィールド値の設定", () => {
   describe("異常な入力", () => {
     describe("時間割に存在しない曜日を指定した場合", () => {
+      const table = new TimeTable.Table([Const.MON, Const.THU, Const.WED], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
-      })
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.SAT, 1));
+      });
     });
 
     describe("時間割に存在しない時限を指定した場合", () => {
+      const table = new TimeTable.Table([Const.MON, Const.THU, Const.WED], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
-      })
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 6));
+      });
     });
 
     describe("時間割のフィールドには項目があり、入力には項目がない場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
-      })
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": []
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
+      });
+    });
+
+    describe("時間割のフィールドには項目がなく、入力には項目がある場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([]);
+      it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
+      });
     });
 
     describe("時間割のフィールドの項目数より少ない場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目1",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }, {
+        "name":   "なんか項目2",
+        "value":  "",
+        "isLink": true,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
       })
     });
 
     describe("時間割のフィールドの項目数より多い場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目1",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }, {
+            "name":   "なんか項目2",
+            "value":  "",
+            "isLink": true,
+            "ref":    "なんかリンク"
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
       })
     });
 
     describe("時間割のフィールドの項目名と異なる場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目1",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目2",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
       })
     });
 
-    describe("時間割のフィールドの項目のリンク有フラグと異なる場合", () => {
+    describe("時間割のフィールドの項目のリンク有フラグがtrueで入力ではfalseの場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": true,
+        "ref":    ""
+      }]);
+
       it("エラーを返す", () => {
-      })
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
+      });
+    });
+
+    describe("時間割のフィールドの項目のリンク有フラグがfalseで入力ではtrueの場合", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
+      it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": true,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.MON, 1));
+      });
     });
   });
 
   describe("正常な入力", () => {
     describe("フィールド名が空文字列の場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("項目の値が空文字列の場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("項目の値がすべて空文字列ではない場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("リンク有で、リンクが空文字列の場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("リンク無で、リンクが空文字列でない場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("リンク無で、リンクが空文字列の場合", () => {
+      it("エラーを返す", () => {
+      })
     });
 
     describe("リンク有で、リンクが空文字列でない場合", () => {
+      it("エラーを返す", () => {
+      });
     });
   })
 });
