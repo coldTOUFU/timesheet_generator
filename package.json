@@ -4,7 +4,10 @@
   "description": "htmlで書かれた時間割の作成用ツール",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "ts-mocha --paths test/**/*.ts"
+  },
+  "directories": {
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,9 @@
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
     "ts-node": "^10.7.0"
+  },
+  "devDependencies": {
+    "@types/expect": "^24.3.0",
+    "ts-mocha": "^10.0.0"
   }
 }
