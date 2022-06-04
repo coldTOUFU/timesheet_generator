@@ -38,7 +38,7 @@ export namespace TimeTable {
       }
     }
 
-    public changeFieldStructure(items: Item[]) {
+    public changeItemStructure(items: Item[]) {
       /* ひな形用itemsに固有の値が入っているかもしれないので、固有の値はそぎ落とす。 */
       const item_tmpl = items.map(i => {
         return {
