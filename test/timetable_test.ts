@@ -519,37 +519,177 @@ describe("フィールド値の設定", () => {
 
   describe("正常な入力", () => {
     describe("フィールド名が空文字列の場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": false,
+        "ref":    ""
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("項目の値が空文字列の場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("項目の値がすべて空文字列ではない場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": false,
+        "ref":    ""
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("リンク有で、リンクが空文字列の場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": true,
+        "ref":    ""
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": true,
+            "ref":    ""
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("リンク無で、リンクが空文字列でない場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": false,
+        "ref":    "なんかリンク"
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": false,
+            "ref":    "なんかリンク"
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("リンク無で、リンクが空文字列の場合", () => {
-      it("エラーを返す", () => {
-      })
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": false,
+        "ref":    ""
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
+      });
     });
 
     describe("リンク有で、リンクが空文字列でない場合", () => {
-      it("エラーを返す", () => {
+      const table = new TimeTable.Table([], 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "なんか値",
+        "isLink": true,
+        "ref":    "なんかリンク"
+      }]);
+      it("入力通りになる．", () => {
+        const f: TimeTable.Field = {
+          "name": "",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "なんか値",
+            "isLink": true,
+            "ref":    "なんかリンク"
+          }]
+        };
+        table.setField(f, Const.MON, 1);
+        const tableObj = table.toObject();
+        assert.isNotEmpty(tableObj.body);
+        assert.deepEqual(f, tableObj.body[0]);
       });
     });
   })
