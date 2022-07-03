@@ -290,7 +290,7 @@ describe("フィールドのアイテム構造の設定", () => {
       it("項目が入力通りになる", () => {
         tableObj.body.forEach(field => {
           const items = field.items;
-          assert.lengthOf(items, 3);
+          assert.lengthOf(items, 2);
           assert.deepEqual(items, [{
             "name":   "",
             "value":  "",
