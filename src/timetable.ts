@@ -14,18 +14,11 @@ export namespace TimeTable {
   }
 
   export class Table {
-    private dayOfWeeks: Const.DayOfWeek[];
+    private dowMax: Const.DayOfWeek;
     private periodMax: number;
     private fields: TimeTable.Field[];
 
-    constructor(dayOfWeeks: Const.DayOfWeek[], periodMax: number) {
-      if (dayOfWeeks.length <= 0) {
-        this.dayOfWeeks = [Const.MON, Const.TUE, Const.WED, Const.THU, Const.FRI];
-      }
-      else {
-        this.dayOfWeeks = JSON.parse(JSON.stringify(dayOfWeeks));
-      }
-
+    constructor(dowMax: Const.DayOfWeek, periodMax: number) {
       if (periodMax <= 0 || periodMax > 10) {
         this.periodMax = 5;
       }
@@ -33,10 +26,11 @@ export namespace TimeTable {
         this.periodMax = periodMax;
       }
 
-      this.fields = Array(this.dayOfWeeks.length * this.periodMax);
-      for (const dow of this.dayOfWeeks) {
+      this.dowMax = dowMax;
+      this.fields = Array((this.dowMax + 1) * this.periodMax);
+      for (let d = 0; d <= this.dowMax; d++) {
         for (let p = 0; p < this.periodMax; p++) {
-          this.fields[p * this.dayOfWeeks.length + dow] = this.initField();
+          this.fields[p * (this.dowMax + 1) + d] = this.initField();
         }
       }
     }
@@ -52,10 +46,10 @@ export namespace TimeTable {
         }
       });
 
-      for (const dow of this.dayOfWeeks) {
+      for (let d = 0; d <= this.dowMax; d++) {
         for (let p = 0; p < this.periodMax; p++) {
-          this.fields[p * this.dayOfWeeks.length + dow] = {
-            "name": this.fields[p * this.dayOfWeeks.length + dow]["name"],
+          this.fields[p * (this.dowMax + 1) + d] = {
+            "name": this.fields[p * (this.dowMax + 1) + d]["name"],
             "items": JSON.parse(JSON.stringify(item_tmpl))
           };
         }
@@ -63,12 +57,12 @@ export namespace TimeTable {
     }
 
     public setField(f: TimeTable.Field, dow: Const.DayOfWeek, period: number) {
-      this.fields[(period - 1) * this.dayOfWeeks.length + dow] = JSON.parse(JSON.stringify(f));
+      this.fields[(period - 1) * (this.dowMax + 1) + dow] = JSON.parse(JSON.stringify(f));
     }
 
     public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
       /* ヘッダの作成 */
-      const dowHeader = this.dayOfWeeks.map(dow => Const.DAY_OF_WEEK_CHARS[dow]);
+      const dowHeader = this.range(0, this.dowMax).map(d => Const.DAY_OF_WEEK_CHARS[d]);
       const periodHeader = this.range(1, this.periodMax).map(i => String(i));
 
       /* ボディの作成 */
