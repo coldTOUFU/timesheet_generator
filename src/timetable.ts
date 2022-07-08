@@ -1,4 +1,5 @@
 import { Const } from "./const";
+import { PeriodOutOfRangeError, DayOfWeekOutOfRangeError, WrongItemStructureError } from "./error/timetable_error";
 
 export namespace TimeTable {
   export type Item = {
@@ -57,6 +58,16 @@ export namespace TimeTable {
     }
 
     public setField(f: TimeTable.Field, dow: Const.DayOfWeek, period: number) {
+      if (period > this.periodMax || period < 0) { throw PeriodOutOfRangeError; }
+      if (dow > this.dowMax || dow < 0) { throw DayOfWeekOutOfRangeError; }
+
+      const targetField = this.fields[(period - 1) * (this.dowMax + 1) + dow];
+      if (!this.cmpJSONStructure(targetField, f)) { throw WrongItemStructureError; }
+      for (let i = 0; i < f.items.length; i++) {
+        if (targetField.items[i].name != f.items[i].name) { throw WrongItemStructureError; }
+        if (targetField.items[i].isLink != f.items[i].isLink) { throw WrongItemStructureError; }
+      }
+
       this.fields[(period - 1) * (this.dowMax + 1) + dow] = JSON.parse(JSON.stringify(f));
     }
 
@@ -79,11 +90,26 @@ export namespace TimeTable {
     }
 
     private range(min: number, max: number): number[] {
-      const r = [];
+      const r: number[] = [];
       for (let i = min; i <= max; i++) {
         r.push(i);
       }
       return r;
+    }
+
+    private cmpJSONStructure(obj1: any,obj2: any): boolean {
+      /* どちらかがオブジェクトでない(プリミティブである)なら、両方プリミティブの場合のみOK。 */
+      if (typeof(obj1) != "object" || typeof(obj2) != "object") { return (typeof(obj1) != "object") && (typeof(obj2) != "object"); }
+      /* 利用上の想定では、この時点でどちらも配列か連想配列なので、両方同じ種類か確認。 */
+      if (Array.isArray(obj1) != Array.isArray(obj2)) { return false; }
+
+      /* キー(配列なら添数、連想配列ならプロパティ)が同じか確認 */
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+      if (keys1.length != keys2.length) { return false; }
+      if (!keys1.every(k => keys2.includes(k))) { return false; }
+
+      return keys1.every(k => this.cmpJSONStructure(obj1[k], obj2[k]));
     }
   }
 }

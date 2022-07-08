@@ -297,6 +297,29 @@ describe("フィールド値の設定", () => {
       });
     });
 
+    describe("時間割に存在しない曜日を指定した場合", () => {
+      const table = new TimeTable.Table(Const.WED, 5);
+      table.changeItemStructure([{
+        "name":   "なんか項目",
+        "value":  "",
+        "isLink": false,
+        "ref":    ""
+      }]);
+
+      it("エラーを返す", () => {
+        const f: TimeTable.Field = {
+          "name": "なんかフィールド",
+          "items": [{
+            "name":   "なんか項目",
+            "value":  "",
+            "isLink": false,
+            "ref":    ""
+          }]
+        };
+        assert.throws(() => table.setField(f, Const.FRI, 5));
+      });
+    });
+
     describe("時間割のフィールドには項目があり、入力には項目がない場合", () => {
       const table = new TimeTable.Table(Const.FRI, 5);
       table.changeItemStructure([{
