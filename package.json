@@ -4,7 +4,8 @@
   "description": "htmlで書かれた時間割の作成用ツール",
   "main": "index.js",
   "scripts": {
-    "test": "ts-mocha --paths test/**/*.ts"
+    "test": "ts-mocha --paths test/**/*.ts",
+    "build": "tsc"
   },
   "directories": {
     "test": "test"
