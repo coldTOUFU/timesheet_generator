@@ -1,4 +1,4 @@
-export namespace Const {
+export namespace TimeTableConst {
   export const MON = 0;
   export const TUE = 1;
   export const WED = 2;
