@@ -47,7 +47,7 @@ export namespace TimeTable {
         for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
           this.fields[dowIdx][periodIdx] = {
             "name":  this.fields[dowIdx][periodIdx]["name"],
-            "items": JSON.parse(JSON.stringify(item_tmpl))
+            "items": this.cloneJSON(item_tmpl)
           };
         }
       }
@@ -67,7 +67,7 @@ export namespace TimeTable {
         if (targetField.items[i].isLink !== f.items[i].isLink) { throw WrongItemStructureError; }
       }
 
-      this.fields[dowIdx][periodIdx] = JSON.parse(JSON.stringify(f));
+      this.fields[dowIdx][periodIdx] = this.cloneJSON(f);
     }
 
     public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
@@ -76,7 +76,7 @@ export namespace TimeTable {
       const periodHeader = this.range(1, this.periodSize - 1).map(period => String(period));
 
       /* ボディの作成 */
-      const body = JSON.parse(JSON.stringify(this.fields));
+      const body = this.cloneJSON(this.fields);
 
       return { "dowHeader": dowHeader, "periodHeader": periodHeader, "body": body };
     }
@@ -94,6 +94,10 @@ export namespace TimeTable {
         r.push(i);
       }
       return r;
+    }
+
+    private cloneJSON(obj: Object) {
+      return JSON.parse(JSON.stringify(obj))
     }
 
     private isSameJsonStructure(obj1: any,obj2: any): boolean {
