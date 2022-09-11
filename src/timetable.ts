@@ -15,23 +15,21 @@ export namespace TimeTable {
   }
 
   export class Table {
-    private dowMax: TimeTableConst.DayOfWeek;
-    private periodMax: number;
+    private dowSize: number;
+    private periodSize: number;
     private fields: TimeTable.Field[];
 
-    constructor(dowMax: TimeTableConst.DayOfWeek, periodMax: number) {
-      if (periodMax <= 0 || periodMax > 10) {
-        this.periodMax = 5;
-      }
-      else {
-        this.periodMax = periodMax;
-      }
+    constructor(dowSize: number, periodSize: number) {
+      if (dowSize <= 0 || dowSize > 7) { dowSize = 5; }
+      if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { periodSize = 5; }
 
-      this.dowMax = dowMax;
-      this.fields = Array((this.dowMax + 1) * this.periodMax);
-      for (let d = 0; d <= this.dowMax; d++) {
-        for (let p = 0; p < this.periodMax; p++) {
-          this.fields[p * (this.dowMax + 1) + d] = this.initField();
+      this.dowSize = dowSize;
+      this.periodSize = periodSize;
+
+      this.fields = Array((this.dowSize) * this.periodSize);
+      for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
+        for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
+          this.fields[periodIdx * this.dowSize + dowIdx] = this.initField();
         }
       }
     }
@@ -47,34 +45,36 @@ export namespace TimeTable {
         }
       });
 
-      for (let d = 0; d <= this.dowMax; d++) {
-        for (let p = 0; p < this.periodMax; p++) {
-          this.fields[p * (this.dowMax + 1) + d] = {
-            "name": this.fields[p * (this.dowMax + 1) + d]["name"],
+      for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
+        for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
+          this.fields[periodIdx * this.dowSize + dowIdx] = {
+            "name":  this.fields[periodIdx * this.dowSize + dowIdx]["name"],
             "items": JSON.parse(JSON.stringify(item_tmpl))
           };
         }
       }
     }
 
-    public setField(f: TimeTable.Field, dow: TimeTableConst.DayOfWeek, period: number) {
-      if (period > this.periodMax || period < 0) { throw PeriodOutOfRangeError; }
-      if (dow > this.dowMax || dow < 0) { throw DayOfWeekOutOfRangeError; }
+    public setField(f: TimeTable.Field, dow: number, period: number) {
+      if (period > this.periodSize || period <= 0) { throw PeriodOutOfRangeError; }
+      if (dow > this.dowSize || dow <= 0) { throw DayOfWeekOutOfRangeError; }
 
-      const targetField = this.fields[(period - 1) * (this.dowMax + 1) + dow];
+      const periodIdx = period - 1;
+      const dowIdx = dow - 1;
+      const targetField = this.fields[periodIdx * this.dowSize + dowIdx];
       if (!this.cmpJSONStructure(targetField, f)) { throw WrongItemStructureError; }
       for (let i = 0; i < f.items.length; i++) {
         if (targetField.items[i].name !== f.items[i].name) { throw WrongItemStructureError; }
         if (targetField.items[i].isLink !== f.items[i].isLink) { throw WrongItemStructureError; }
       }
 
-      this.fields[(period - 1) * (this.dowMax + 1) + dow] = JSON.parse(JSON.stringify(f));
+      this.fields[periodIdx * this.dowSize + dowIdx] = JSON.parse(JSON.stringify(f));
     }
 
     public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
       /* ヘッダの作成 */
-      const dowHeader = this.range(0, this.dowMax).map(d => TimeTableConst.DAY_OF_WEEK_CHARS[d]);
-      const periodHeader = this.range(1, this.periodMax).map(i => String(i));
+      const dowHeader = this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
+      const periodHeader = this.range(1, this.periodSize - 1).map(period => String(period));
 
       /* ボディの作成 */
       const body = JSON.parse(JSON.stringify(this.fields));
