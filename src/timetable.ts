@@ -20,8 +20,8 @@ export namespace TimeTable {
     private fields: TimeTable.Field[][]; // 曜日ごとで触りたいので、[dowIdx][periodIdx]の形でアクセスすること。
 
     constructor(dowSize: number, periodSize: number) {
-      if (dowSize <= 0 || dowSize > 7) { dowSize = 5; }
-      if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { periodSize = 5; }
+      if (dowSize <= 0 || dowSize > 7) { dowSize = TimeTableConst.dowDefaultSize; }
+      if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { periodSize = TimeTableConst.periodDefaultSize; }
 
       this.dowSize = dowSize;
       this.periodSize = periodSize;
