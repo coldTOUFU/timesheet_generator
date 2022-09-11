@@ -62,7 +62,7 @@ export namespace TimeTable {
       const periodIdx = period - 1;
       const dowIdx = dow - 1;
       const targetField = this.fields[periodIdx * this.dowSize + dowIdx];
-      if (!this.cmpJSONStructure(targetField, f)) { throw WrongItemStructureError; }
+      if (!this.isSameJsonStructure(targetField, f)) { throw WrongItemStructureError; }
       for (let i = 0; i < f.items.length; i++) {
         if (targetField.items[i].name !== f.items[i].name) { throw WrongItemStructureError; }
         if (targetField.items[i].isLink !== f.items[i].isLink) { throw WrongItemStructureError; }
@@ -97,7 +97,7 @@ export namespace TimeTable {
       return r;
     }
 
-    private cmpJSONStructure(obj1: any,obj2: any): boolean {
+    private isSameJsonStructure(obj1: any,obj2: any): boolean {
       /* どちらかがオブジェクトでない(プリミティブである)なら、両方プリミティブの場合のみOK。 */
       if (typeof(obj1) !== "object" || typeof(obj2) != "object") { return (typeof(obj1) != "object") && (typeof(obj2) != "object"); }
       /* 利用上の想定では、この時点でどちらも配列か連想配列なので、両方同じ種類か確認。 */
@@ -109,7 +109,7 @@ export namespace TimeTable {
       if (keys1.length !== keys2.length) { return false; }
       if (!keys1.every(k => keys2.includes(k))) { return false; }
 
-      return keys1.every(k => this.cmpJSONStructure(obj1[k], obj2[k]));
+      return keys1.every(k => this.isSameJsonStructure(obj1[k], obj2[k]));
     }
   }
 }
