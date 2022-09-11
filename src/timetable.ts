@@ -14,9 +14,15 @@ export namespace TimeTable {
     items:     TimeTable.Item[]
   }
 
+  export type PeriodRange = {
+    start: Date,
+    end:   Date
+  }
+
   export class Table {
     private dowSize: number;
     private periodSize: number;
+    private periodRanges: PeriodRange[];
     private fields: TimeTable.Field[][]; // 曜日ごとで触りたいので、[dowIdx][periodIdx]の形でアクセスすること。
 
     constructor(dowSize: number, periodSize: number) {
@@ -26,10 +32,68 @@ export namespace TimeTable {
       this.dowSize = dowSize;
       this.periodSize = periodSize;
 
+      this.periodRanges = new Array(this.periodSize).map(_ => { return {
+        start: new Date(TimeTableConst.baseDate),
+        end:   new Date(TimeTableConst.baseDate)
+      }});
+
       this.fields = Array(this.dowSize);
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
-        this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
+        this.fields[dowIdx] = new Array(this.periodSize).map(_ => this.initField());
       }
+    }
+
+    public setDowSize(dowSize: number) {
+      if (dowSize <= 0 || dowSize > 7) { return; }
+
+      if (dowSize > this.dowSize) {
+        for (let dowIdx = this.dowSize; dowIdx < dowSize; dowIdx++) {
+          this.fields[dowIdx] = new Array(this.periodSize).map(_ => this.initField());
+        }
+      }
+      else if (dowSize < this.dowSize) {
+        this.fields = this.fields.slice(0, dowSize);
+      }
+    }
+
+    public setPeriodSize(periodSize: number) {
+      if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { return; }
+
+      if (periodSize > this.periodSize) {
+        for (let periodIdx = this.periodSize; periodIdx < periodSize; periodIdx++) {
+          this.periodRanges[periodIdx] = {
+            start: new Date(TimeTableConst.baseDate),
+            end:   new Date(TimeTableConst.baseDate)
+          };
+        }
+        for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
+          for (let periodIdx = this.periodSize; periodIdx < periodSize; periodIdx++) {
+            this.fields[dowIdx][periodIdx] = this.initField();
+          }
+        }
+      }
+      else if (periodSize < this.periodSize) {
+        this.periodRanges = this.periodRanges.slice(0, periodSize);
+        for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
+          this.fields[dowIdx] = this.fields[dowIdx].slice(0, periodSize);
+        }
+      }
+    }
+
+    public setPeriodRange(period: number, start: Date, end: Date) {
+      if (period > this.periodSize || period <= 0) { throw PeriodOutOfRangeError; }
+
+      const periodIdx = period - 1;
+      if (start === null) {
+        start = this.periodRanges[period]["start"]
+      }
+      if (end === null) {
+        end = this.periodRanges[period]["end"]
+      }
+      this.periodRanges[period] = {
+        start: start,
+        end:   end
+      };
     }
 
     public changeItemStructure(items: Item[]) {
