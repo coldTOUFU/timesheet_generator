@@ -17,7 +17,7 @@ export namespace TimeTable {
   export class Table {
     private dowSize: number;
     private periodSize: number;
-    private fields: TimeTable.Field[];
+    private fields: TimeTable.Field[][]; // 曜日ごとで触りたいので、[dowIdx][periodIdx]の形でアクセスすること。
 
     constructor(dowSize: number, periodSize: number) {
       if (dowSize <= 0 || dowSize > 7) { dowSize = 5; }
@@ -26,11 +26,9 @@ export namespace TimeTable {
       this.dowSize = dowSize;
       this.periodSize = periodSize;
 
-      this.fields = Array((this.dowSize) * this.periodSize);
+      this.fields = Array(this.dowSize);
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
-        for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
-          this.fields[periodIdx * this.dowSize + dowIdx] = this.initField();
-        }
+        this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
       }
     }
 
@@ -47,8 +45,8 @@ export namespace TimeTable {
 
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
         for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
-          this.fields[periodIdx * this.dowSize + dowIdx] = {
-            "name":  this.fields[periodIdx * this.dowSize + dowIdx]["name"],
+          this.fields[dowIdx][periodIdx] = {
+            "name":  this.fields[dowIdx][periodIdx]["name"],
             "items": JSON.parse(JSON.stringify(item_tmpl))
           };
         }
@@ -59,16 +57,17 @@ export namespace TimeTable {
       if (period > this.periodSize || period <= 0) { throw PeriodOutOfRangeError; }
       if (dow > this.dowSize || dow <= 0) { throw DayOfWeekOutOfRangeError; }
 
+      /* 引数で与えられたFieldの構造が正しいか確認。 */
       const periodIdx = period - 1;
       const dowIdx = dow - 1;
-      const targetField = this.fields[periodIdx * this.dowSize + dowIdx];
+      const targetField = this.fields[dowIdx][periodIdx];
       if (!this.isSameJsonStructure(targetField, f)) { throw WrongItemStructureError; }
       for (let i = 0; i < f.items.length; i++) {
         if (targetField.items[i].name !== f.items[i].name) { throw WrongItemStructureError; }
         if (targetField.items[i].isLink !== f.items[i].isLink) { throw WrongItemStructureError; }
       }
 
-      this.fields[periodIdx * this.dowSize + dowIdx] = JSON.parse(JSON.stringify(f));
+      this.fields[dowIdx][periodIdx] = JSON.parse(JSON.stringify(f));
     }
 
     public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
