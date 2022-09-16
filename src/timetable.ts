@@ -134,10 +134,14 @@ export namespace TimeTable {
       this.fields[dowIdx][periodIdx] = this.cloneJSON(f);
     }
 
-    public toObject(): { dowHeader: string[], periodHeader: string[], body: Field[] } {
+    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: Field[] } {
       /* ヘッダの作成 */
       const dowHeader = this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
-      const periodHeader = this.range(1, this.periodSize - 1).map(period => String(period));
+      const periodHeader = this.periodRanges.map((periodRange, idx) => {return {
+        period: idx + 1,
+        start:  periodRange["start"].toTimeString().slice(0, 5),
+        end:    periodRange["end"].toTimeString().slice(0, 5)
+      }});
 
       /* ボディの作成 */
       const body = this.cloneJSON(this.fields);
