@@ -32,14 +32,14 @@ export namespace TimeTable {
       this.dowSize = dowSize;
       this.periodSize = periodSize;
 
-      this.periodRanges = new Array(this.periodSize).map(_ => { return {
-        start: new Date(TimeTableConst.baseDate),
-        end:   new Date(TimeTableConst.baseDate)
-      }});
+      this.periodRanges = new Array(this.periodSize).fill({
+          start: new Date(TimeTableConst.baseDate),
+          end:   new Date(TimeTableConst.baseDate)
+      });
 
       this.fields = Array(this.dowSize);
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
-        this.fields[dowIdx] = new Array(this.periodSize).map(_ => this.initField());
+        this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
       }
     }
 
@@ -48,7 +48,8 @@ export namespace TimeTable {
 
       if (dowSize > this.dowSize) {
         for (let dowIdx = this.dowSize; dowIdx < dowSize; dowIdx++) {
-          this.fields[dowIdx] = new Array(this.periodSize).map(_ => this.initField());
+          this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
+
         }
       }
       else if (dowSize < this.dowSize) {

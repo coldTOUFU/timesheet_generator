@@ -251,9 +251,10 @@ const EditTable: React.FC<EditTableProps> = (props) => {
   return (
     <>
       <p>各授業の名前や項目の値を入力してください．</p>
-      <table>
+      <table border={1}>
         <thead>
           <tr>
+            <th/>
             {
               props.tableContent.dowHeader.map((e, idx) => {
                 return <th key={idx.toString()}>{e}</th>
@@ -273,17 +274,15 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                     [...Array(dowN).keys()].map((dowIdx) => {
                       /* セル中の各項目。 */
                       return (
-                        <>
+                        <td>
                           <input type="text" name="fieldTitle" placeholder="タイトル" onChange={e => onEditFieldTitleChange(dowIdx, periodIdx, e)}/>
-                          <div>
-                            {
-                              props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
-                                const placeholder = item.isLink ? "リンク" : "表示する文字";
-                                return <p><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></p>
-                              })
-                            }
-                          </div>
-                        </>
+                          {
+                            props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
+                              const placeholder = item.isLink ? "リンク" : "表示する文字";
+                              return <><br/><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></>
+                            })
+                          }
+                        </td>
                       )
                     })
                   }
