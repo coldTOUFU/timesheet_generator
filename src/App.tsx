@@ -2,11 +2,20 @@ import React from 'react';
 
 import { TimeTable } from './timetable'
 
-const DowMaxies: React.FC = () => {
+type DowMaxiesProps = {
+  onDowMaxChange: (dowMax: number) => void;
+}
+
+const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
+  const onDowMaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const num = Number(e.target.value);
+    props.onDowMaxChange(num);
+  }
+
   return (
     <>
       <p>何曜日まで入れるかを選んでください。</p>
-      <select>
+      <select onChange={e => onDowMaxChange(e)}>
         <option value="1">月曜まで</option>
         <option value="2">火曜まで</option>
         <option value="3">水曜まで</option>
@@ -19,11 +28,20 @@ const DowMaxies: React.FC = () => {
   );
 }
 
-const PeriodMaxies: React.FC = () => {
+type PeriodMaxiesProps = {
+  onPeriodMaxChange: (periodMax: number) => void;
+}
+
+const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
+  const onPeriodMaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const num = Number(e.target.value);
+    props.onPeriodMaxChange(num);
+  }
+
   return (
     <>
       <p>時限数を選んでください。</p>
-      <select>
+      <select onChange={e => onPeriodMaxChange(e)}>
         <option value="1">1限まで</option>
         <option value="2">2限まで</option>
         <option value="3">3限まで</option>
@@ -39,10 +57,32 @@ const PeriodMaxies: React.FC = () => {
   );
 }
 
-const PeriodRange: React.FC = () => {
+type PeriodRangeProps = {
+  period: number;
+  onPeriodChange: (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => void;
+}
+
+const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
+  const onPeriodHourRangeStChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const hour = Number(e.target.value);
+    props.onPeriodChange(props.period, hour, null, null, null);
+  }
+  const onPeriodMinuteRangeStChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const minute = Number(e.target.value);
+    props.onPeriodChange(props.period, null, minute, null, null);
+  }
+  const onPeriodHourRangeEnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const hour = Number(e.target.value);
+    props.onPeriodChange(props.period, null, null, hour, null);
+  }
+  const onPeriodMinuteRangeEnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const minute = Number(e.target.value);
+    props.onPeriodChange(props.period, null, null, null, minute);
+  }
+
   return (
     <>
-      <select name="hourRangeSt">
+      <select name="hourRangeSt" onChange={e => onPeriodHourRangeStChange(e)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -69,7 +109,7 @@ const PeriodRange: React.FC = () => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeSt">
+      <select name="minuteRangeSt" onChange={e => onPeriodMinuteRangeStChange(e)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -84,7 +124,7 @@ const PeriodRange: React.FC = () => {
         <option value="55">55</option>
       </select>
       ~
-      <select name="hourRangeEn">
+      <select name="hourRangeEn" onChange={e => onPeriodHourRangeEnChange(e)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -111,7 +151,7 @@ const PeriodRange: React.FC = () => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeEn">
+      <select name="minuteRangeEn" onChange={e => onPeriodMinuteRangeEnChange(e)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -131,67 +171,86 @@ const PeriodRange: React.FC = () => {
 
 type PeriodRangesProps = {
   maxPeriod: number;
+  onPeriodChange: (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => void;
 }
 
-const PeriodRanges: React.FC<PeriodRangesProps> = props => {
-  let rangeElements: JSX.Element[] = [];
-  for(let i = 0; i < props.maxPeriod; i++) {
-    rangeElements.push(<PeriodRange/>);
-    if (i < props.maxPeriod - 1) {
-      rangeElements.push(<br></br>);
-    }
-  }
-
+const PeriodRanges: React.FC<PeriodRangesProps> = (props) => {
   return (
     <>
       <p>開講時間の範囲を入力してください。</p>
       {
         [...Array(props.maxPeriod).keys()].map((i) => {
-          return <div key={i.toString()}><PeriodRange/></div>
+          return (
+            <div key={i.toString()}>
+              <PeriodRange
+                period={i}
+                onPeriodChange={props.onPeriodChange}
+              />
+            </div>
+          )
         })
       }
     </>
   );
 }
 
-const FieldItems: React.FC = () => {
+type FieldItemsProps = {
+  onFieldItemCheckBoxChange: (idx: number, checked: boolean) => void;
+  onFieldItemTextChange: (idx: number, txt: string) => void;
+}
+
+const FieldItems: React.FC<FieldItemsProps> = (props) => {
+  const onFieldItemCheckBoxChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    props.onFieldItemCheckBoxChange(idx, checked);
+  }
+  const onFieldItemTextChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    props.onFieldItemTextChange(idx, e.target.textContent || "");
+  }
+
   return (
     <>
       <div>
         <h3>項目1</h3>
-        <input type="checkbox"/>リンク有
-        <br/>
-        <input type="text" placeholder="表示名"/>
+        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(0, e)}/>リンク有
+        <br />
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(0, e)}/>
       </div>
       <div>
         <h3>項目2</h3>
-        <input type="checkbox"/>リンク有
-        <br/>
-        <input type="text" placeholder="表示名"/>
+        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(1, e)}/>リンク有
+        <br />
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(1, e)}/>
       </div>
       <div>
         <h3>項目3</h3>
-        <input type="checkbox"/>リンク有
-        <br/>
-        <input type="text" placeholder="表示名"/>
+        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(2, e)}/>リンク有
+        <br />
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(2, e)}/>
       </div>
     </>
   );
 }
 
 type EditTableProps = {
-  tableContent: { dowHeader: string[], periodHeader: string[], body: TimeTable.Field[] };
+  tableContent: { dowHeader: string[], periodHeader: {period: number, start: Date, end: Date}[], body: TimeTable.Field[][] };
+  onEditFieldTitleChange: (dowIdx: number, periodIdx: number, txt: string) => void;
+  onEditFieldItemChange: (dowIdx: number, periodIdx: number, itemIdx: number, txt: string) => void;
 }
 
-const EditTable: React.FC<EditTableProps> = props => {
+const EditTable: React.FC<EditTableProps> = (props) => {
   const dowN = props.tableContent.dowHeader.length;
   const periodN = props.tableContent.periodHeader.length;
+  const onEditFieldTitleChange = (dowIdx: number, periodIdx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    props.onEditFieldTitleChange(dowIdx, periodIdx, e.target.textContent || "");
+  }
+  const onEditFieldItemChange = (dowIdx: number, periodIdx: number, itemIdx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    props.onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e.target.textContent || "");
+  }
 
   return (
     <>
-      <p>曜日、時間割、フィールド設定の入力が終わったら、下の「時間割の構造設定を反映」ボタンを押してください．</p>
-      <p>その後、各授業の名前や項目の値を入力してください．</p>
-      <button type="button">時間割の構造設定を反映</button>
+      <p>各授業の名前や項目の値を入力してください．</p>
       <table>
         <thead>
           <tr>
@@ -204,17 +263,28 @@ const EditTable: React.FC<EditTableProps> = props => {
         </thead>
         <tbody>
           {
-            [...Array(periodN).keys()].map((i) => {
+            /* 各i時限に対する処理。 */
+            [...Array(periodN).keys()].map((periodIdx) => {
               return (
-                <tr key={i.toString()}>
-                  <td>{props.tableContent.periodHeader[i]}</td>
+                <tr key={periodIdx.toString()}>
+                  <td>{props.tableContent.periodHeader[periodIdx].period}</td>
                   {
-                    /* i時限目のセル群(時間割テーブルの横方向)。 */
-                    props.tableContent.body.slice(i * dowN, (i + 1) * dowN).map(body => {
-                      return body.items.map(item => {
-                        const placeholder = item.isLink ? "リンク" : "表示する文字";
-                        return <td><input type="text" name="fieldText" placeholder={placeholder}/></td>
-                      })
+                    /* i時限の行を曜日列方向になめる。 */
+                    [...Array(dowN).keys()].map((dowIdx) => {
+                      /* セル中の各項目。 */
+                      return (
+                        <>
+                          <input type="text" name="fieldTitle" placeholder="タイトル" onChange={e => onEditFieldTitleChange(dowIdx, periodIdx, e)}/>
+                          <div>
+                            {
+                              props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
+                                const placeholder = item.isLink ? "リンク" : "表示する文字";
+                                return <p><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></p>
+                              })
+                            }
+                          </div>
+                        </>
+                      )
                     })
                   }
                 </tr>
@@ -237,13 +307,42 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state = { table: new TimeTable.Table(5, 5) };
   }
 
+
+  updatePeriodRanges(period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
+    this.state.table.setPeriodRange(period, startMin, startHour, endHour, endMin);
+  }
+
+  updateFieldItemIsLink(idx: number, isLink: boolean) {
+    const item_tmpls = this.state.table.getItemStructure();
+    item_tmpls[idx].isLink = isLink;
+    this.state.table.setItemStructure(item_tmpls);
+  }
+
+  updateFieldItemText(idx: number, name: string) {
+    const item_tmpls = this.state.table.getItemStructure();
+    item_tmpls[idx].name = name;
+    this.state.table.setItemStructure(item_tmpls);
+  }
+
+  updateFieldTitle(dowIdx: number, periodIdx: number, title: string) {
+    const field = this.state.table.getField(periodIdx, dowIdx);
+    field.name = title;
+    this.state.table.setField(field, dowIdx, periodIdx);
+  }
+
+  updateFieldItem(dowIdx: number, periodIdx: number, itemIdx: number, value: string) {
+    const field = this.state.table.getField(periodIdx, dowIdx);
+    field.items[itemIdx].value = value;
+    this.state.table.setField(field, dowIdx, periodIdx);
+  }
+
   render() {
     const tableContent = this.state.table.toObject();
-    const dowMaxies = <DowMaxies/>;
-    const periodMaxies = <PeriodMaxies/>;
-    const periodRanges = <PeriodRanges maxPeriod={tableContent.dowHeader.length}/>;
-    const fieldItems = <FieldItems/>;
-    const editTable = <EditTable tableContent={tableContent}/>;
+    const dowMaxies = <DowMaxies onDowMaxChange={num => this.state.table.setDowSize(num)}/>;
+    const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.state.table.setPeriodSize(num)}/>;
+    const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
+    const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemTextChange={this.updateFieldItemText}/>;
+    const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItem}/>;
 
     return (
       <>
@@ -275,8 +374,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
 const App: React.FC = () => {
   return (
     <div className="main">
-      <h1>時間割ジェネレータ</h1>
-      <TimeTableRenderer/>
+      <TimeTableRenderer />
     </div>
   );
 }

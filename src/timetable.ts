@@ -80,23 +80,23 @@ export namespace TimeTable {
       }
     }
 
-    public setPeriodRange(period: number, start: Date, end: Date) {
-      if (period > this.periodSize || period <= 0) { throw PeriodOutOfRangeError; }
+    public setPeriodRange(periodIdx: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
+      if (periodIdx >= this.periodSize || periodIdx < 0) { throw PeriodOutOfRangeError; }
 
-      const periodIdx = period - 1;
-      if (start === null) {
-        start = this.periodRanges[period]["start"]
-      }
-      if (end === null) {
-        end = this.periodRanges[period]["end"]
-      }
-      this.periodRanges[period] = {
+      let start = new Date(TimeTableConst.baseDate);
+      let end = new Date(TimeTableConst.baseDate);
+      if (startHour) { start.setHours(startHour); }
+      if (startMin) { start.setMinutes(startMin); }
+      if (endHour) { end.setHours(endHour); }
+      if (endMin) { end.setMinutes(endMin); }
+
+      this.periodRanges[periodIdx] = {
         start: start,
         end:   end
       };
     }
 
-    public changeItemStructure(items: Item[]) {
+    public setItemStructure(items: Item[]) {
       /* ひな形用itemsに固有の値が入っているかもしれないので、固有の値はそぎ落とす。 */
       const item_tmpl = items.map(i => {
         return {
@@ -117,13 +117,22 @@ export namespace TimeTable {
       }
     }
 
-    public setField(f: TimeTable.Field, dow: number, period: number) {
-      if (period > this.periodSize || period <= 0) { throw PeriodOutOfRangeError; }
-      if (dow > this.dowSize || dow <= 0) { throw DayOfWeekOutOfRangeError; }
+    public getItemStructure(): Item[] {
+      return this.fields[0][0].items.map(i => {
+        return {
+          "name": i["name"],
+          "value": "",
+          "isLink": i["isLink"],
+          "ref": ""
+        }
+      });
+    }
+
+    public setField(f: TimeTable.Field, dowIdx: number, periodIdx: number) {
+      if (periodIdx >= this.periodSize || periodIdx < 0) { throw PeriodOutOfRangeError; }
+      if (dowIdx >= this.dowSize || dowIdx < 0) { throw DayOfWeekOutOfRangeError; }
 
       /* 引数で与えられたFieldの構造が正しいか確認。 */
-      const periodIdx = period - 1;
-      const dowIdx = dow - 1;
       const targetField = this.fields[dowIdx][periodIdx];
       if (!this.isSameJsonStructure(targetField, f)) { throw WrongItemStructureError; }
       for (let i = 0; i < f.items.length; i++) {
@@ -134,17 +143,23 @@ export namespace TimeTable {
       this.fields[dowIdx][periodIdx] = this.cloneJSON(f);
     }
 
-    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: Field[] } {
+    public getField(dow: number, period: number): Field {
+      const periodIdx = period - 1;
+      const dowIdx = dow - 1;
+      return this.fields[dowIdx][periodIdx];
+    }
+
+    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: Date, end: Date}[], body: Field[][] } {
       /* ヘッダの作成 */
       const dowHeader = this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
       const periodHeader = this.periodRanges.map((periodRange, idx) => {return {
         period: idx + 1,
-        start:  periodRange["start"].toTimeString().slice(0, 5),
-        end:    periodRange["end"].toTimeString().slice(0, 5)
+        start:  periodRange["start"],
+        end:    periodRange["end"]
       }});
 
       /* ボディの作成 */
-      const body = this.cloneJSON(this.fields);
+      const body: Field[][] = this.cloneJSON(this.fields);
 
       return { "dowHeader": dowHeader, "periodHeader": periodHeader, "body": body };
     }
@@ -152,7 +167,26 @@ export namespace TimeTable {
     private initField(): TimeTable.Field {
       return {
         name:  "",
-        items: []
+        items: [
+          {
+            "name": "",
+            "value": "",
+            "isLink": false,
+            "ref": ""
+          },
+          {
+            "name": "",
+            "value": "",
+            "isLink": false,
+            "ref": ""
+          },
+          {
+            "name": "",
+            "value": "",
+            "isLink": false,
+            "ref": ""
+          }
+        ]
       }
     }
 
