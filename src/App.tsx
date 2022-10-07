@@ -274,12 +274,12 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                     [...Array(dowN).keys()].map((dowIdx) => {
                       /* セル中の各項目。 */
                       return (
-                        <td>
+                        <td key={dowIdx.toString()}>
                           <input type="text" name="fieldTitle" placeholder="タイトル" onChange={e => onEditFieldTitleChange(dowIdx, periodIdx, e)}/>
                           {
                             props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
                               const placeholder = item.name + (item.isLink ? "のURL" : "");
-                              return <><br/><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></>
+                              return <div key={itemIdx.toString()}><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></div>
                             })
                           }
                         </td>
