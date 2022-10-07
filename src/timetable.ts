@@ -5,8 +5,7 @@ export namespace TimeTable {
   export type Item = {
     name:   string,
     value:  string,
-    isLink: boolean,
-    ref:    string
+    isLink: boolean
   }
 
   export type Field = {
@@ -170,22 +169,19 @@ export namespace TimeTable {
         name:  "",
         items: [
           {
-            "name": "",
-            "value": "",
-            "isLink": false,
-            "ref": ""
+            "name":   "",
+            "value":  "",
+            "isLink": false
           },
           {
-            "name": "",
-            "value": "",
-            "isLink": false,
-            "ref": ""
+            "name":   "",
+            "value":  "",
+            "isLink": false
           },
           {
-            "name": "",
-            "value": "",
-            "isLink": false,
-            "ref": ""
+            "name":   "",
+            "value":  "",
+            "isLink": false
           }
         ]
       }

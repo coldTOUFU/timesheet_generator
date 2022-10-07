@@ -196,7 +196,7 @@ const PeriodRanges: React.FC<PeriodRangesProps> = (props) => {
 
 type FieldItemsProps = {
   onFieldItemCheckBoxChange: (idx: number, checked: boolean) => void;
-  onFieldItemTextChange: (idx: number, txt: string) => void;
+  onFieldItemNameChange: (idx: number, txt: string) => void;
 }
 
 const FieldItems: React.FC<FieldItemsProps> = (props) => {
@@ -204,29 +204,29 @@ const FieldItems: React.FC<FieldItemsProps> = (props) => {
     const checked = e.target.checked;
     props.onFieldItemCheckBoxChange(idx, checked);
   }
-  const onFieldItemTextChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onFieldItemTextChange(idx, e.target.textContent || "");
+  const onFieldItemNameChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    props.onFieldItemNameChange(idx, e.target.textContent || "");
   }
 
   return (
     <>
       <div>
         <h3>項目1</h3>
-        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(0, e)}/>リンク有
+        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(0, e)}/>
         <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(0, e)}/>
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(0, e)}/>
       </div>
       <div>
         <h3>項目2</h3>
-        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(1, e)}/>リンク有
+        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(1, e)}/>
         <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(1, e)}/>
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(1, e)}/>
       </div>
       <div>
         <h3>項目3</h3>
-        <input type="checkbox" onChange={e => onFieldItemCheckBoxChange(2, e)}/>リンク有
+        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(2, e)}/>
         <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemTextChange(2, e)}/>
+        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(2, e)}/>
       </div>
     </>
   );
@@ -278,7 +278,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                           <input type="text" name="fieldTitle" placeholder="タイトル" onChange={e => onEditFieldTitleChange(dowIdx, periodIdx, e)}/>
                           {
                             props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
-                              const placeholder = item.isLink ? "リンク" : "表示する文字";
+                              const placeholder = item.name + (item.isLink ? "のURL" : "");
                               return <><br/><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></>
                             })
                           }
@@ -306,21 +306,8 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state = { table: new TimeTable.Table(5, 5) };
   }
 
-
   updatePeriodRanges(period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
     this.state.table.setPeriodRange(period, startMin, startHour, endHour, endMin);
-  }
-
-  updateFieldItemIsLink(idx: number, isLink: boolean) {
-    const item_tmpls = this.state.table.getItemStructure();
-    item_tmpls[idx].isLink = isLink;
-    this.state.table.setItemStructure(item_tmpls);
-  }
-
-  updateFieldItemText(idx: number, name: string) {
-    const item_tmpls = this.state.table.getItemStructure();
-    item_tmpls[idx].name = name;
-    this.state.table.setItemStructure(item_tmpls);
   }
 
   updateFieldTitle(dowIdx: number, periodIdx: number, title: string) {
@@ -329,7 +316,19 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state.table.setField(field, dowIdx, periodIdx);
   }
 
-  updateFieldItem(dowIdx: number, periodIdx: number, itemIdx: number, value: string) {
+  updateFieldItemIsLink(idx: number, isLink: boolean) {
+    const item_tmpls = this.state.table.getItemStructure();
+    item_tmpls[idx].isLink = isLink;
+    this.state.table.setItemStructure(item_tmpls);
+  }
+
+  updateFieldItemName(idx: number, name: string) {
+    const item_tmpls = this.state.table.getItemStructure();
+    item_tmpls[idx].name = name;
+    this.state.table.setItemStructure(item_tmpls);
+  }
+
+  updateFieldItemValue(dowIdx: number, periodIdx: number, itemIdx: number, value: string) {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.items[itemIdx].value = value;
     this.state.table.setField(field, dowIdx, periodIdx);
@@ -340,8 +339,8 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const dowMaxies = <DowMaxies onDowMaxChange={num => this.state.table.setDowSize(num)}/>;
     const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.state.table.setPeriodSize(num)}/>;
     const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
-    const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemTextChange={this.updateFieldItemText}/>;
-    const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItem}/>;
+    const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
+    const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
 
     return (
       <>
