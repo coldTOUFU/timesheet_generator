@@ -306,29 +306,29 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state = { table: new TimeTable.Table(5, 5) };
   }
 
-  updatePeriodRanges(period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
+  private updatePeriodRanges = (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => {
     this.state.table.setPeriodRange(period, startMin, startHour, endHour, endMin);
   }
 
-  updateFieldTitle(dowIdx: number, periodIdx: number, title: string) {
+  private updateFieldTitle = (dowIdx: number, periodIdx: number, title: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.name = title;
     this.state.table.setField(field, dowIdx, periodIdx);
   }
 
-  updateFieldItemIsLink(idx: number, isLink: boolean) {
+  private updateFieldItemIsLink = (idx: number, isLink: boolean) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].isLink = isLink;
     this.state.table.setItemStructure(item_tmpls);
   }
 
-  updateFieldItemName(idx: number, name: string) {
+  private updateFieldItemName = (idx: number, name: string) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].name = name;
     this.state.table.setItemStructure(item_tmpls);
   }
 
-  updateFieldItemValue(dowIdx: number, periodIdx: number, itemIdx: number, value: string) {
+  private updateFieldItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.items[itemIdx].value = value;
     this.state.table.setField(field, dowIdx, periodIdx);
