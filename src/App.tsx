@@ -306,38 +306,47 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state = { table: new TimeTable.Table(5, 5) };
   }
 
+  private updateDowSize = (num: number) => {
+    this.state.table.setDowSize(num);
+  };
+
+  private updatePeriodSize = (num: number) => {
+    this.state.table.setPeriodSize(num);
+  };
+
   private updatePeriodRanges = (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => {
-    this.state.table.setPeriodRange(period, startMin, startHour, endHour, endMin);
-  }
+    this.state.table.setPeriodRange(period, startHour, startMin, endHour, endMin);
+  };
 
   private updateFieldTitle = (dowIdx: number, periodIdx: number, title: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.name = title;
     this.state.table.setField(field, dowIdx, periodIdx);
-  }
+    console.log(this.state)
+  };
 
   private updateFieldItemIsLink = (idx: number, isLink: boolean) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].isLink = isLink;
     this.state.table.setItemStructure(item_tmpls);
-  }
+  };
 
   private updateFieldItemName = (idx: number, name: string) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].name = name;
     this.state.table.setItemStructure(item_tmpls);
-  }
+  };
 
   private updateFieldItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.items[itemIdx].value = value;
     this.state.table.setField(field, dowIdx, periodIdx);
-  }
+  };
 
   render() {
     const tableContent = this.state.table.toObject();
-    const dowMaxies = <DowMaxies onDowMaxChange={num => this.state.table.setDowSize(num)}/>;
-    const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.state.table.setPeriodSize(num)}/>;
+    const dowMaxies = <DowMaxies onDowMaxChange={num => this.updateDowSize(num)}/>;
+    const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.updatePeriodSize(num)}/>;
     const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
     const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;

@@ -31,10 +31,13 @@ export namespace TimeTable {
       this.dowSize = dowSize;
       this.periodSize = periodSize;
 
-      this.periodRanges = new Array(this.periodSize).fill({
+      this.periodRanges = [];
+      for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
+        this.periodRanges.push({
           start: new Date(TimeTableConst.baseDate),
           end:   new Date(TimeTableConst.baseDate)
-      });
+        });
+      }
 
       this.fields = Array(this.dowSize);
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
@@ -48,12 +51,13 @@ export namespace TimeTable {
       if (dowSize > this.dowSize) {
         for (let dowIdx = this.dowSize; dowIdx < dowSize; dowIdx++) {
           this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
-
         }
       }
       else if (dowSize < this.dowSize) {
         this.fields = this.fields.slice(0, dowSize);
       }
+
+      this.dowSize = dowSize;
     }
 
     public setPeriodSize(periodSize: number) {
@@ -78,22 +82,17 @@ export namespace TimeTable {
           this.fields[dowIdx] = this.fields[dowIdx].slice(0, periodSize);
         }
       }
+
+      this.periodSize = periodSize;
     }
 
     public setPeriodRange(periodIdx: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
       if (periodIdx >= this.periodSize || periodIdx < 0) { throw PeriodOutOfRangeError; }
 
-      let start = new Date(TimeTableConst.baseDate);
-      let end = new Date(TimeTableConst.baseDate);
-      if (startHour) { start.setHours(startHour); }
-      if (startMin) { start.setMinutes(startMin); }
-      if (endHour) { end.setHours(endHour); }
-      if (endMin) { end.setMinutes(endMin); }
-
-      this.periodRanges[periodIdx] = {
-        start: start,
-        end:   end
-      };
+      if (startHour) { this.periodRanges[periodIdx].start.setHours(startHour); }
+      if (startMin) { this.periodRanges[periodIdx].start.setMinutes(startMin); }
+      if (endHour) { this.periodRanges[periodIdx].end.setHours(endHour); }
+      if (endMin) { this.periodRanges[periodIdx].end.setMinutes(endMin); }
     }
 
     public setItemStructure(items: Item[]) {
@@ -102,8 +101,7 @@ export namespace TimeTable {
         return {
           "name": i["name"],
           "value": "",
-          "isLink": i["isLink"],
-          "ref": ""
+          "isLink": i["isLink"]
         }
       });
 
@@ -122,8 +120,7 @@ export namespace TimeTable {
         return {
           "name": i["name"],
           "value": "",
-          "isLink": i["isLink"],
-          "ref": ""
+          "isLink": i["isLink"]
         }
       });
     }
@@ -143,9 +140,7 @@ export namespace TimeTable {
       this.fields[dowIdx][periodIdx] = this.cloneJSON(f);
     }
 
-    public getField(dow: number, period: number): Field {
-      const periodIdx = period - 1;
-      const dowIdx = dow - 1;
+    public getField(dowIdx: number, periodIdx: number): Field {
       return this.fields[dowIdx][periodIdx];
     }
 
