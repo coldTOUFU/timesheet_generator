@@ -296,10 +296,17 @@ const EditTable: React.FC<EditTableProps> = (props) => {
   );
 }
 
+type GeneratedHTMLProps = {
+  table: TimeTable.Table
+}
+
+const GeneratedHTML: React.FC<GeneratedHTMLProps> = (props) => {
+  return (<div/>);
+}
+
 type TimeTableRendererState = {
   table: TimeTable.Table;
 }
-
 class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   constructor(props: {}) {
     super(props);
@@ -363,6 +370,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
     const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
+    const generatedHTML = <GeneratedHTML table={this.state.table}/>;
 
     return (
       <>
@@ -385,6 +393,10 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
         <div>
           <h2>時間割の入力</h2>
           {editTable}
+        </div>
+        <div>
+          <h2>生成されたHTML</h2>
+          {generatedHTML}
         </div>
       </>
     );
