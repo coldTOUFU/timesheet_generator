@@ -307,40 +307,53 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   }
 
   private updateDowSize = (num: number) => {
-    this.state.table.setDowSize(num);
+    const table = this.state.table;
+    table.setDowSize(num);
+    this.setState({ table: table });
   };
 
   private updatePeriodSize = (num: number) => {
-    this.state.table.setPeriodSize(num);
+    const table = this.state.table;
+    table.setPeriodSize(num);
+    this.setState({ table: table });
   };
 
   private updatePeriodRanges = (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => {
-    this.state.table.setPeriodRange(period, startHour, startMin, endHour, endMin);
+    const table = this.state.table;
+    table.setPeriodRange(period, startHour, startMin, endHour, endMin);
+    this.setState({ table: table });
   };
 
   private updateFieldTitle = (dowIdx: number, periodIdx: number, title: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.name = title;
-    this.state.table.setField(field, dowIdx, periodIdx);
-    console.log(this.state)
+    const table = this.state.table;
+    table.setField(field, dowIdx, periodIdx);
+    this.setState({ table: table });
   };
 
   private updateFieldItemIsLink = (idx: number, isLink: boolean) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].isLink = isLink;
-    this.state.table.setItemStructure(item_tmpls);
+    const table = this.state.table;
+    table.setItemStructure(item_tmpls);
+    this.setState({ table: table });
   };
 
   private updateFieldItemName = (idx: number, name: string) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].name = name;
-    this.state.table.setItemStructure(item_tmpls);
+    const table = this.state.table;
+    table.setItemStructure(item_tmpls);
+    this.setState({ table: table });
   };
 
   private updateFieldItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
     const field = this.state.table.getField(periodIdx, dowIdx);
     field.items[itemIdx].value = value;
-    this.state.table.setField(field, dowIdx, periodIdx);
+    const table = this.state.table;
+    table.setField(field, dowIdx, periodIdx);
+    this.setState({ table: table });
   };
 
   render() {
