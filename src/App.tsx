@@ -296,12 +296,48 @@ const EditTable: React.FC<EditTableProps> = (props) => {
   );
 }
 
-type GeneratedHTMLProps = {
-  table: TimeTable.Table
+const DownloadString = (filename: string, str: string) => {
+  const blob = new Blob([str], {type: 'text/plain'});
+  const download_link = document.createElement('a');
+  download_link.href = URL.createObjectURL(blob);
+  download_link.download = filename;
+  download_link.click();
 }
 
-const GeneratedHTML: React.FC<GeneratedHTMLProps> = (props) => {
-  return (<div/>);
+type DownloadAsJSONProps = {
+  jsonStr: string;
+}
+
+const DownloadAsJSON: React.FC<DownloadAsJSONProps> = (props) => {
+  return (
+    <input type="button"
+        onClick={() => DownloadString("timetable.json", props.jsonStr)}
+        value="マークダウンとして保存"/>
+  );
+}
+
+type DownloadAsMarkdownProps = {
+  markdownStr: string;
+}
+
+const DownloadAsMarkdown: React.FC<DownloadAsMarkdownProps> = (props) => {
+  return (
+    <input type="button"
+        onClick={() => DownloadString("timetable.md", props.markdownStr)}
+        value="JSONとして保存"/>
+  );
+}
+
+type DownloadAsHTMLProps = {
+  htmlStr: string;
+}
+
+const DownloadAsHTML: React.FC<DownloadAsHTMLProps> = (props) => {
+  return (
+    <input type="button"
+        onClick={() => DownloadString("timetable.html", props.htmlStr)}
+        value="HTMLとして保存"/>
+  );
 }
 
 type TimeTableRendererState = {
@@ -370,8 +406,9 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
     const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
-    const generatedHTML = <GeneratedHTML table={this.state.table}/>;
-
+    const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify(this.state.table.toObject())}/>;
+    const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
+    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML()}/>;
     return (
       <>
         <div>
@@ -395,8 +432,16 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
           {editTable}
         </div>
         <div>
-          <h2>生成されたHTML</h2>
-          {generatedHTML}
+          <h2>時間割をJSONで保存</h2>
+          {downloadAsJSON}
+        </div>
+        <div>
+          <h2>時間割をMarkdownで保存</h2>
+          {downloadAsMarkdown}
+        </div>
+        <div>
+          <h2>時間割をHTMLで保存</h2>
+          {downloadAsHTML}
         </div>
       </>
     );

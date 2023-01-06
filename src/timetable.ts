@@ -159,6 +159,47 @@ export namespace TimeTable {
       return { "dowHeader": dowHeader, "periodHeader": periodHeader, "body": body };
     }
 
+    public toMarkdown(): string {
+      const src = this.toObject();
+
+      /* 曜日ヘッダと、表の太線を作る。 */
+      let mdStr = `|   | ${src.dowHeader.join(" | ")} |\n`;
+      mdStr += `|   | ${src.dowHeader.map(_ => " --- ").join(" | ")} |\n`;
+
+      /* 表のボディを作る。 */
+      mdStr += src.periodHeader.map((e, idx) => {
+        const periodStr = `${e.period}<br>${e.start}<br>${e.end}`;
+        const rowStr = src.body[idx].map(field => {
+          const itemsStr = field.items.map(item =>
+              item.isLink ?
+                  `[${item.name}](${item.value})` : item.value).join("<br>");
+          return `${field.name}<br>${itemsStr}`;
+        }).join(" | ");
+        return `| ${periodStr} | ${rowStr} |`;
+      }).join("\n");
+      return mdStr;
+    }
+
+    public toHTML(): string {
+      const src = this.toObject();
+
+      /* 曜日ヘッダを作る。 */
+      let thStr = `<th>${src.dowHeader.join("</th><th>")}</th>`
+
+      /* 表のボディを作る。 */
+      let tbodyStr = src.periodHeader.map((e, idx) => {
+        const periodStr = `<th>${e.period}<br>${e.start}<br>${e.end}</th>`;
+        const rowStr = src.body[idx].map(field => {
+          const itemsStr = field.items.map(item =>
+              item.isLink ?
+                  `<a href="${item.value}">${item.name}</a>` : item.value).join("<br>");
+          return `<td>${field.name}<br>${itemsStr}</td>`;
+        }).join();
+        return `<tr>${periodStr}${rowStr}</tr>`;
+      }).join("\n");
+      return `<html><body><tbody>${thStr}${tbodyStr}</tbody></body></html>`;
+    }
+
     private initField(): TimeTable.Field {
       return {
         name:  "",
