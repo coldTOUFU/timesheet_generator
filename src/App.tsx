@@ -312,7 +312,7 @@ const DownloadAsJSON: React.FC<DownloadAsJSONProps> = (props) => {
   return (
     <input type="button"
         onClick={() => DownloadString("timetable.json", props.jsonStr)}
-        value="マークダウンとして保存"/>
+        value="JSONとして保存"/>
   );
 }
 
@@ -324,7 +324,7 @@ const DownloadAsMarkdown: React.FC<DownloadAsMarkdownProps> = (props) => {
   return (
     <input type="button"
         onClick={() => DownloadString("timetable.md", props.markdownStr)}
-        value="JSONとして保存"/>
+        value="マークダウンとして保存"/>
   );
 }
 
