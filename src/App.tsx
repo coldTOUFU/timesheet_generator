@@ -57,26 +57,26 @@ const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
 
 type PeriodRangeProps = {
   period: number;
-  onPeriodChange: (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => void;
+  onPeriodChange: (period: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) => void;
 }
 
 const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
-  const onPeriodHourRangeStChange = (hour: number) => {
-    props.onPeriodChange(props.period, hour, null, null, null);
+  const onPeriodHourRangeStChange = (hour: string) => {
+    props.onPeriodChange(props.period, hour, undefined, undefined, undefined);
   }
-  const onPeriodMinuteRangeStChange = (minute: number) => {
-    props.onPeriodChange(props.period, null, minute, null, null);
+  const onPeriodMinuteRangeStChange = (minute: string) => {
+    props.onPeriodChange(props.period, undefined, minute, undefined, undefined);
   }
-  const onPeriodHourRangeEnChange = (hour: number) => {
-    props.onPeriodChange(props.period, null, null, hour, null);
+  const onPeriodHourRangeEnChange = (hour: string) => {
+    props.onPeriodChange(props.period, undefined, undefined, hour, undefined);
   }
-  const onPeriodMinuteRangeEnChange = (minute: number) => {
-    props.onPeriodChange(props.period, null, null, null, minute);
+  const onPeriodMinuteRangeEnChange = (minute: string) => {
+    props.onPeriodChange(props.period, undefined, undefined, undefined, minute);
   }
 
   return (
     <>
-      <select name="hourRangeSt" onChange={event => Number(event.target.value)}>
+      <select name="hourRangeSt" onChange={event => onPeriodHourRangeStChange(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -103,7 +103,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeSt" onChange={event => Number(event.target.value)}>
+      <select name="minuteRangeSt" onChange={event => onPeriodMinuteRangeStChange(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -118,7 +118,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="55">55</option>
       </select>
       ~
-      <select name="hourRangeEn" onChange={event => Number(event.target.value)}>
+      <select name="hourRangeEn" onChange={event => onPeriodHourRangeEnChange(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -145,7 +145,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeEn" onChange={event => Number(event.target.value)}>
+      <select name="minuteRangeEn" onChange={event => onPeriodMinuteRangeEnChange(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -165,7 +165,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
 
 type PeriodRangesProps = {
   maxPeriod: number;
-  onPeriodChange: (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => void;
+  onPeriodChange: (period: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) => void;
 }
 
 const PeriodRanges: React.FC<PeriodRangesProps> = (props) => {
@@ -226,7 +226,7 @@ const FieldItems: React.FC<FieldItemsProps> = (props) => {
 }
 
 type EditTableProps = {
-  tableContent: { dowHeader: string[], periodHeader: {period: number, start: Date, end: Date}[], body: TimeTable.Field[][] };
+  tableContent: { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: TimeTable.Field[][] };
   onEditFieldTitleChange: (dowIdx: number, periodIdx: number, txt: string) => void;
   onEditFieldItemChange: (dowIdx: number, periodIdx: number, itemIdx: number, txt: string) => void;
 }
@@ -358,7 +358,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updatePeriodRanges = (period: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) => {
+  private updatePeriodRanges = (period: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) => {
     const table = this.state.table;
     table.setPeriodRange(period, startHour, startMin, endHour, endMin);
     this.setState({ table: table });

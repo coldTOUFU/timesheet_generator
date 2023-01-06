@@ -14,8 +14,10 @@ export namespace TimeTable {
   }
 
   export type PeriodRange = {
-    start: Date,
-    end:   Date
+    startHour: string,
+    startMin:  string,
+    endHour:   string
+    endMin:    string
   }
 
   export class Table {
@@ -34,8 +36,10 @@ export namespace TimeTable {
       this.periodRanges = [];
       for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
         this.periodRanges.push({
-          start: new Date(TimeTableConst.baseDate),
-          end:   new Date(TimeTableConst.baseDate)
+          startHour: "00",
+          startMin:  "00",
+          endHour:   "00",
+          endMin:    "00"
         });
       }
 
@@ -66,8 +70,10 @@ export namespace TimeTable {
       if (periodSize > this.periodSize) {
         for (let periodIdx = this.periodSize; periodIdx < periodSize; periodIdx++) {
           this.periodRanges[periodIdx] = {
-            start: new Date(TimeTableConst.baseDate),
-            end:   new Date(TimeTableConst.baseDate)
+            startHour: "00",
+            startMin:  "00",
+            endHour:   "00",
+            endMin:    "00"
           };
         }
         for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
@@ -86,13 +92,13 @@ export namespace TimeTable {
       this.periodSize = periodSize;
     }
 
-    public setPeriodRange(periodIdx: number, startHour: number | null, startMin: number | null, endHour: number | null, endMin: number | null) {
+    public setPeriodRange(periodIdx: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) {
       if (periodIdx >= this.periodSize || periodIdx < 0) { throw PeriodOutOfRangeError; }
 
-      if (startHour) { this.periodRanges[periodIdx].start.setHours(startHour); }
-      if (startMin) { this.periodRanges[periodIdx].start.setMinutes(startMin); }
-      if (endHour) { this.periodRanges[periodIdx].end.setHours(endHour); }
-      if (endMin) { this.periodRanges[periodIdx].end.setMinutes(endMin); }
+      if (startHour) { this.periodRanges[periodIdx].startHour = startHour; }
+      if (startMin) { this.periodRanges[periodIdx].startMin = startMin; }
+      if (endHour) { this.periodRanges[periodIdx].endHour = endHour; }
+      if (endMin) { this.periodRanges[periodIdx].endMin = endMin; }
     }
 
     public setItemStructure(items: Item[]) {
@@ -144,13 +150,13 @@ export namespace TimeTable {
       return this.fields[dowIdx][periodIdx];
     }
 
-    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: Date, end: Date}[], body: Field[][] } {
+    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: Field[][] } {
       /* ヘッダの作成 */
       const dowHeader = this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
       const periodHeader = this.periodRanges.map((periodRange, idx) => {return {
         period: idx + 1,
-        start:  periodRange["start"],
-        end:    periodRange["end"]
+        start:  `${periodRange.startHour}:${periodRange.startMin}`,
+        end:    `${periodRange.endHour}:${periodRange.endMin}`
       }});
 
       /* ボディの作成 */
