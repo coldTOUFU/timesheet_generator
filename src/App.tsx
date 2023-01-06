@@ -7,15 +7,14 @@ type DowMaxiesProps = {
 }
 
 const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
-  const onDowMaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const num = Number(e.target.value);
+  const onDowMaxChange = (num: number) => {
     props.onDowMaxChange(num);
   }
 
   return (
     <>
       <p>何曜日まで入れるかを選んでください。</p>
-      <select defaultValue="5" onChange={e => onDowMaxChange(e)}>
+      <select defaultValue="5" onChange={event => onDowMaxChange(Number(event.target.value))}>
         <option value="1">月曜まで</option>
         <option value="2">火曜まで</option>
         <option value="3">水曜まで</option>
@@ -33,15 +32,14 @@ type PeriodMaxiesProps = {
 }
 
 const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
-  const onPeriodMaxChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const num = Number(e.target.value);
+  const onPeriodMaxChange = (num: number) => {
     props.onPeriodMaxChange(num);
   }
 
   return (
     <>
       <p>時限数を選んでください。</p>
-      <select defaultValue="5" onChange={e => onPeriodMaxChange(e)}>
+      <select defaultValue="5" onChange={event => onPeriodMaxChange(Number(event.target.value))}>
         <option value="1">1限まで</option>
         <option value="2">2限まで</option>
         <option value="3">3限まで</option>
@@ -63,26 +61,22 @@ type PeriodRangeProps = {
 }
 
 const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
-  const onPeriodHourRangeStChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const hour = Number(e.target.value);
+  const onPeriodHourRangeStChange = (hour: number) => {
     props.onPeriodChange(props.period, hour, null, null, null);
   }
-  const onPeriodMinuteRangeStChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const minute = Number(e.target.value);
+  const onPeriodMinuteRangeStChange = (minute: number) => {
     props.onPeriodChange(props.period, null, minute, null, null);
   }
-  const onPeriodHourRangeEnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const hour = Number(e.target.value);
+  const onPeriodHourRangeEnChange = (hour: number) => {
     props.onPeriodChange(props.period, null, null, hour, null);
   }
-  const onPeriodMinuteRangeEnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const minute = Number(e.target.value);
+  const onPeriodMinuteRangeEnChange = (minute: number) => {
     props.onPeriodChange(props.period, null, null, null, minute);
   }
 
   return (
     <>
-      <select name="hourRangeSt" onChange={e => onPeriodHourRangeStChange(e)}>
+      <select name="hourRangeSt" onChange={event => Number(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -109,7 +103,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeSt" onChange={e => onPeriodMinuteRangeStChange(e)}>
+      <select name="minuteRangeSt" onChange={event => Number(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -124,7 +118,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="55">55</option>
       </select>
       ~
-      <select name="hourRangeEn" onChange={e => onPeriodHourRangeEnChange(e)}>
+      <select name="hourRangeEn" onChange={event => Number(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -151,7 +145,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeEn" onChange={e => onPeriodMinuteRangeEnChange(e)}>
+      <select name="minuteRangeEn" onChange={event => Number(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -200,33 +194,32 @@ type FieldItemsProps = {
 }
 
 const FieldItems: React.FC<FieldItemsProps> = (props) => {
-  const onFieldItemCheckBoxChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
+  const onFieldItemCheckBoxChange = (idx: number, checked: boolean) => {
     props.onFieldItemCheckBoxChange(idx, checked);
   }
-  const onFieldItemNameChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onFieldItemNameChange(idx, e.target.textContent || "");
+  const onFieldItemNameChange = (idx: number, text: string) => {
+    props.onFieldItemNameChange(idx, text);
   }
 
   return (
     <>
       <div>
         <h3>項目1</h3>
-        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(0, e)}/>
-        <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(0, e)}/>
+        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(0, event.target.checked)}/>
+        <br/>
+        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(0, event.target.value)}/>
       </div>
       <div>
         <h3>項目2</h3>
-        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(1, e)}/>
-        <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(1, e)}/>
+        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(1, event.target.checked)}/>
+        <br/>
+        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(1, event.target.value)}/>
       </div>
       <div>
         <h3>項目3</h3>
-        リンク有<input type="checkbox" onChange={e => onFieldItemCheckBoxChange(2, e)}/>
-        <br />
-        <input type="text" placeholder="表示名" onChange={e => onFieldItemNameChange(2, e)}/>
+        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(2, event.target.checked)}/>
+        <br/>
+        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(2, event.target.value)}/>
       </div>
     </>
   );
@@ -241,11 +234,11 @@ type EditTableProps = {
 const EditTable: React.FC<EditTableProps> = (props) => {
   const dowN = props.tableContent.dowHeader.length;
   const periodN = props.tableContent.periodHeader.length;
-  const onEditFieldTitleChange = (dowIdx: number, periodIdx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onEditFieldTitleChange(dowIdx, periodIdx, e.target.textContent || "");
+  const onEditFieldTitleChange = (dowIdx: number, periodIdx: number, text: string) => {
+    props.onEditFieldTitleChange(dowIdx, periodIdx, text);
   }
-  const onEditFieldItemChange = (dowIdx: number, periodIdx: number, itemIdx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e.target.textContent || "");
+  const onEditFieldItemChange = (dowIdx: number, periodIdx: number, itemIdx: number, text: string) => {
+    props.onEditFieldItemChange(dowIdx, periodIdx, itemIdx, text);
   }
 
   return (
@@ -275,11 +268,15 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                       /* セル中の各項目。 */
                       return (
                         <td key={dowIdx.toString()}>
-                          <input type="text" name="fieldTitle" placeholder="タイトル" onChange={e => onEditFieldTitleChange(dowIdx, periodIdx, e)}/>
+                          <input type="text" name="fieldTitle" placeholder="タイトル"
+                              onChange={event => onEditFieldTitleChange(dowIdx, periodIdx, event.target.value)}/>
                           {
                             props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
                               const placeholder = item.name + (item.isLink ? "のURL" : "");
-                              return <div key={itemIdx.toString()}><input type="text" name="fieldText" placeholder={placeholder} onChange={e => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, e)}/></div>
+                              return <div key={itemIdx.toString()}>
+                                       <input type="text" name="fieldText" placeholder={placeholder}
+                                              onChange={event => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, event.target.value)}/>
+                                     </div>
                             })
                           }
                         </td>
