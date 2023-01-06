@@ -167,13 +167,19 @@ export namespace TimeTable {
       mdStr += `|   | ${src.dowHeader.map(_ => " --- ").join(" | ")} |\n`;
 
       /* 表のボディを作る。 */
-      mdStr += src.periodHeader.map((e, idx) => {
-        const periodStr = `${e.period}<br>${e.start}<br>${e.end}`;
-        const rowStr = src.body[idx].map(field => {
-          const itemsStr = field.items.map(item =>
-              item.isLink ?
-                  `[${item.name}](${item.value})` : item.value).join("<br>");
-          return `${field.name}<br>${itemsStr}`;
+      /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
+      mdStr += src.periodHeader.map((period, periodIdx) => {
+        /* 行ヘッダー部。 */
+        const periodStr = `${period.period}<br>${period.start}<br>${period.end}`;
+        /* 行のヘッダー以外を作る。 */
+        /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
+        const rowStr = src.dowHeader.map((_, dowIdx) => {
+          /* セル1つ分を作る。src.bodyの2次元配列は曜日、時限の順にアクセスすることに注意。 */
+          const itemsStr = src.body[dowIdx][periodIdx].items
+              .map(item => item.isLink ?
+                  `[${item.name}](${item.value})` :
+                  item.value).join("<br>");
+          return `${src.body[dowIdx][periodIdx].name}<br>${itemsStr}`;
         }).join(" | ");
         return `| ${periodStr} | ${rowStr} |`;
       }).join("\n");
@@ -187,13 +193,19 @@ export namespace TimeTable {
       let thStr = `<th>${src.dowHeader.join("</th><th>")}</th>`
 
       /* 表のボディを作る。 */
-      let tbodyStr = src.periodHeader.map((e, idx) => {
-        const periodStr = `<th>${e.period}<br>${e.start}<br>${e.end}</th>`;
-        const rowStr = src.body[idx].map(field => {
-          const itemsStr = field.items.map(item =>
-              item.isLink ?
-                  `<a href="${item.value}">${item.name}</a>` : item.value).join("<br>");
-          return `<td>${field.name}<br>${itemsStr}</td>`;
+      /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
+      let tbodyStr = src.periodHeader.map((period, periodIdx) => {
+        /* 行ヘッダー部。 */
+        const periodStr = `<th>${period.period}<br>${period.start}<br>${period.end}</th>`;
+        /* 行のヘッダー以外を作る。 */
+        /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
+        const rowStr = src.dowHeader.map((_, dowIdx) => {
+          /* セル1つ分を作る。src.bodyの2次元配列は曜日、時限の順にアクセスすることに注意。 */
+          const itemsStr = src.body[dowIdx][periodIdx].items
+              .map(item => item.isLink ?
+              `<a href="${item.value}">${item.name}</a>` :
+              item.value).join("<br>");
+          return `<td>${src.body[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
         }).join();
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");
