@@ -15,7 +15,7 @@ const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
   return (
     <>
       <p>何曜日まで入れるかを選んでください。</p>
-      <select onChange={e => onDowMaxChange(e)}>
+      <select defaultValue="5" onChange={e => onDowMaxChange(e)}>
         <option value="1">月曜まで</option>
         <option value="2">火曜まで</option>
         <option value="3">水曜まで</option>
@@ -41,7 +41,7 @@ const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
   return (
     <>
       <p>時限数を選んでください。</p>
-      <select onChange={e => onPeriodMaxChange(e)}>
+      <select defaultValue="5" onChange={e => onPeriodMaxChange(e)}>
         <option value="1">1限まで</option>
         <option value="2">2限まで</option>
         <option value="3">3限まで</option>
