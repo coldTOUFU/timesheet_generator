@@ -170,13 +170,13 @@ export namespace TimeTable {
 
       /* 曜日ヘッダと、表の太線を作る。 */
       let mdStr = `|   | ${src.dowHeader.join(" | ")} |\n`;
-      mdStr += `|   | ${src.dowHeader.map(_ => " --- ").join(" | ")} |\n`;
+      mdStr += `| --- | ${src.dowHeader.map(_ => " --- ").join(" | ")} |\n`;
 
       /* 表のボディを作る。 */
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
       mdStr += src.periodHeader.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
-        const periodStr = `${period.period}<br>${period.start}<br>${period.end}`;
+        const periodStr = `${period.period}<br>${period.start}<br>～<br>${period.end}`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
         const rowStr = src.dowHeader.map((_, dowIdx) => {
@@ -196,13 +196,13 @@ export namespace TimeTable {
       const src = this.toObject();
 
       /* 曜日ヘッダを作る。 */
-      let thStr = `<th>${src.dowHeader.join("</th><th>")}</th>`
+      let thStr = `<th></th><th>${src.dowHeader.join("</th><th>")}</th>`
 
       /* 表のボディを作る。 */
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
       let tbodyStr = src.periodHeader.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
-        const periodStr = `<th>${period.period}<br>${period.start}<br>${period.end}</th>`;
+        const periodStr = `<th>${period.period}<br>${period.start}<br>～<br>${period.end}</th>`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
         const rowStr = src.dowHeader.map((_, dowIdx) => {
@@ -215,7 +215,7 @@ export namespace TimeTable {
         }).join();
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");
-      return `<html><body><tbody>${thStr}${tbodyStr}</tbody></body></html>`;
+      return `<html><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
     }
 
     private initField(): TimeTable.Field {
