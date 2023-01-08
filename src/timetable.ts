@@ -228,7 +228,7 @@ export namespace TimeTable {
               `<a href="${item.value}">${item.name}</a>` :
               item.value).join("<br>");
           return `<td>${this.fields[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
-        }).join();
+        }).join("");
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");
       return `<html><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
