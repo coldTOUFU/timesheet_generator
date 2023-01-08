@@ -1,5 +1,5 @@
 import { TimeTableConst } from "./timetable_const";
-import { PeriodOutOfRangeError, DayOfWeekOutOfRangeError, WrongItemStructureError } from "./error/timetable_error";
+import { PeriodOutOfRangeError, DayOfWeekOutOfRangeError, WrongItemStructureError, FailedToParseHTMLError, FailedToParseObjectError } from "./error/timetable_error";
 
 export namespace TimeTable {
   export type Item = {
@@ -64,6 +64,12 @@ export namespace TimeTable {
       this.dowSize = dowSize;
     }
 
+    public getDowSize(): number { return this.dowSize; }
+
+    public getDowArray(): string[] {
+      return this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
+    }
+
     public setPeriodSize(periodSize: number) {
       if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { return; }
 
@@ -90,6 +96,16 @@ export namespace TimeTable {
       }
 
       this.periodSize = periodSize;
+    }
+
+    public getPeriodSize(): number { return this.periodSize; }
+
+    public getPeriodArray(): {period: number, start: string, end: string}[] {
+      return this.periodRanges.map((periodRange, idx) => {return {
+        period: idx + 1,
+        start:  `${periodRange.startHour}:${periodRange.startMin}`,
+        end:    `${periodRange.endHour}:${periodRange.endMin}`
+      }});
     }
 
     public setPeriodRange(periodIdx: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) {
@@ -150,42 +166,41 @@ export namespace TimeTable {
       return this.fields[dowIdx][periodIdx];
     }
 
-    public toObject(): { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: Field[][] } {
-      /* ヘッダの作成 */
-      const dowHeader = this.range(0, this.dowSize - 1).map(dowIdx => TimeTableConst.DAY_OF_WEEK_CHARS[dowIdx]);
-      const periodHeader = this.periodRanges.map((periodRange, idx) => {return {
-        period: idx + 1,
-        start:  `${periodRange.startHour}:${periodRange.startMin}`,
-        end:    `${periodRange.endHour}:${periodRange.endMin}`
-      }});
+    public getFields(): Field[][] {
+      return this.fields;
+    }
 
-      /* ボディの作成 */
-      const body: Field[][] = this.cloneJSON(this.fields);
-
-      return { "dowHeader": dowHeader, "periodHeader": periodHeader, "body": body };
+    public toObject(): { dowSize: number, periodSize: number, periodRanges : PeriodRange[], fields: Field[][] } {
+      return {
+        dowSize: this.dowSize,
+        periodSize: this.periodSize,
+        periodRanges: this.periodRanges,
+        fields: this.fields
+      };
     }
 
     public toMarkdown(): string {
-      const src = this.toObject();
+      const dowArray = this.getDowArray();
+      const periodArray = this.getPeriodArray();
 
       /* 曜日ヘッダと、表の太線を作る。 */
-      let mdStr = `|   | ${src.dowHeader.join(" | ")} |\n`;
-      mdStr += `| --- | ${src.dowHeader.map(_ => " --- ").join(" | ")} |\n`;
+      let mdStr = `|   | ${dowArray.join(" | ")} |\n`;
+      mdStr += `| --- | ${dowArray.map(_ => " --- ").join(" | ")} |\n`;
 
       /* 表のボディを作る。 */
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
-      mdStr += src.periodHeader.map((period, periodIdx) => {
+      mdStr += periodArray.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
         const periodStr = `${period.period}<br>${period.start}<br>～<br>${period.end}`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
-        const rowStr = src.dowHeader.map((_, dowIdx) => {
-          /* セル1つ分を作る。src.bodyの2次元配列は曜日、時限の順にアクセスすることに注意。 */
-          const itemsStr = src.body[dowIdx][periodIdx].items
+        const rowStr = dowArray.map((_, dowIdx) => {
+          /* セル1つ分を作る。fieldsの2次元配列は曜日、時限の順にアクセスすることに注意。 */
+          const itemsStr = this.fields[dowIdx][periodIdx].items
               .map(item => item.isLink ?
                   `[${item.name}](${item.value})` :
                   item.value).join("<br>");
-          return `${src.body[dowIdx][periodIdx].name}<br>${itemsStr}`;
+          return `${this.fields[dowIdx][periodIdx].name}<br>${itemsStr}`;
         }).join(" | ");
         return `| ${periodStr} | ${rowStr} |`;
       }).join("\n");
@@ -193,29 +208,87 @@ export namespace TimeTable {
     }
 
     public toHTML(): string {
-      const src = this.toObject();
+      const dowArray = this.getDowArray();
+      const periodArray = this.getPeriodArray();
 
       /* 曜日ヘッダを作る。 */
-      let thStr = `<th></th><th>${src.dowHeader.join("</th><th>")}</th>`
+      let thStr = `<tr><th></th><th>${dowArray.join("</th><th>")}</th></tr>`
 
       /* 表のボディを作る。 */
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
-      let tbodyStr = src.periodHeader.map((period, periodIdx) => {
+      let tbodyStr = periodArray.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
         const periodStr = `<th>${period.period}<br>${period.start}<br>～<br>${period.end}</th>`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
-        const rowStr = src.dowHeader.map((_, dowIdx) => {
-          /* セル1つ分を作る。src.bodyの2次元配列は曜日、時限の順にアクセスすることに注意。 */
-          const itemsStr = src.body[dowIdx][periodIdx].items
+        const rowStr = dowArray.map((_, dowIdx) => {
+          /* セル1つ分を作る。fieldsの2次元配列は曜日、時限の順にアクセスすることに注意。 */
+          const itemsStr = this.fields[dowIdx][periodIdx].items
               .map(item => item.isLink ?
               `<a href="${item.value}">${item.name}</a>` :
               item.value).join("<br>");
-          return `<td>${src.body[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
+          return `<td>${this.fields[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
         }).join();
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");
       return `<html><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
+    }
+
+    public fromObject(src: any) {
+      if (!src.dowSize || !src.periodSize || !src.periodRanges || !src.fields) {
+        throw FailedToParseObjectError;
+      }
+      this.dowSize = src.dowSize;
+      this.periodSize = src.periodSize;
+      this.periodRanges = src.periodRanges;
+      this.fields = src.fields;
+    }
+
+    public fromHTML(src: string) {
+      const htmlNode = this.parseHTML(src);
+      if (!htmlNode) { throw FailedToParseHTMLError; }
+
+      this.dowSize = htmlNode.querySelectorAll("thead th").length - 1;
+      this.periodSize = htmlNode.querySelectorAll("tbody tr").length;
+
+      const rows = Array.from(htmlNode.querySelectorAll("tbody tr")) as HTMLTableRowElement[];
+      if (rows.length === 0) { throw FailedToParseHTMLError; }
+      this.periodRanges = rows.map((tr) => {
+        const matches = tr.querySelector("th")?.innerHTML?.match(/\d\d:\d\d/);
+        if (!matches) { throw FailedToParseHTMLError; }
+        return {
+          startHour: matches[0].substring(0, 2),
+          startMin:  matches[0].substring(3, 5),
+          endHour:   matches[1].substring(0, 2),
+          endMin:    matches[1].substring(3, 5)
+        }
+      });
+      const cells = rows.map(tr => Array.from(tr.querySelectorAll("td"))) as HTMLTableCellElement[][];
+      this.fields = this.range(0, this.dowSize - 1).map(dow => {
+        return this.range(0, this.periodSize - 1).map(period => {
+          const items = cells[period][dow].innerHTML.split("<br>")
+          return {
+            name: items[0],
+            items: items.slice(1, items.length).map(item => {
+              let isLink = false;
+              let name = "";
+              let value = "";
+              if (item.includes("<a")) {
+                isLink = true;
+                name = item.replace(/<.+>/g, '');
+                value = item.replace(/^<a href="/, '').replace(/".+/, '');
+              } else {
+                value = item
+              }
+              return {
+                name: name,
+                value: value,
+                isLink: isLink
+              }
+            })
+          }
+        });
+      });
     }
 
     private initField(): TimeTable.Field {
@@ -266,6 +339,11 @@ export namespace TimeTable {
       if (!keys1.every(k => keys2.includes(k))) { return false; }
 
       return keys1.every(k => this.isSameJsonStructure(obj1[k], obj2[k]));
+    }
+
+    private parseHTML(src: string): HTMLElement | null{
+      const parser = new DOMParser();
+      return parser.parseFromString(src, 'text/html')?.body;
     }
   }
 }

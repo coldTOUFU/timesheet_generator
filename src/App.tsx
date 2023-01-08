@@ -226,14 +226,14 @@ const FieldItems: React.FC<FieldItemsProps> = (props) => {
 }
 
 type EditTableProps = {
-  tableContent: { dowHeader: string[], periodHeader: {period: number, start: string, end: string}[], body: TimeTable.Field[][] };
+  table: TimeTable.Table;
   onEditFieldTitleChange: (dowIdx: number, periodIdx: number, txt: string) => void;
   onEditFieldItemChange: (dowIdx: number, periodIdx: number, itemIdx: number, txt: string) => void;
 }
 
 const EditTable: React.FC<EditTableProps> = (props) => {
-  const dowN = props.tableContent.dowHeader.length;
-  const periodN = props.tableContent.periodHeader.length;
+  const dowN = props.table.getDowSize();
+  const periodN = props.table.getPeriodSize();
   const onEditFieldTitleChange = (dowIdx: number, periodIdx: number, text: string) => {
     props.onEditFieldTitleChange(dowIdx, periodIdx, text);
   }
@@ -249,7 +249,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
           <tr>
             <th/>
             {
-              props.tableContent.dowHeader.map((e, idx) => {
+              props.table.getDowArray().map((e, idx) => {
                 return <th key={idx.toString()}>{e}</th>
               })
             }
@@ -261,7 +261,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             [...Array(periodN).keys()].map((periodIdx) => {
               return (
                 <tr key={periodIdx.toString()}>
-                  <td>{props.tableContent.periodHeader[periodIdx].period}</td>
+                  <td>{props.table.getPeriodArray()[periodIdx].period}</td>
                   {
                     /* i時限の行を曜日列方向になめる。 */
                     [...Array(dowN).keys()].map((dowIdx) => {
@@ -271,7 +271,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                           <input type="text" name="fieldTitle" placeholder="タイトル"
                               onChange={event => onEditFieldTitleChange(dowIdx, periodIdx, event.target.value)}/>
                           {
-                            props.tableContent.body[dowIdx][periodIdx].items.map((item, itemIdx) => {
+                            props.table.getFields()[dowIdx][periodIdx].items.map((item, itemIdx) => {
                               const placeholder = item.name + (item.isLink ? "のURL" : "");
                               return <div key={itemIdx.toString()}>
                                        <input type="text" name="fieldText" placeholder={placeholder}
@@ -397,12 +397,12 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   };
 
   render() {
-    const tableContent = this.state.table.toObject();
+    const table = this.state.table;
     const dowMaxies = <DowMaxies onDowMaxChange={num => this.updateDowSize(num)}/>;
     const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.updatePeriodSize(num)}/>;
-    const periodRanges = <PeriodRanges maxPeriod={tableContent.periodHeader.length} onPeriodChange={this.updatePeriodRanges}/>;
+    const periodRanges = <PeriodRanges maxPeriod={table.getPeriodSize()} onPeriodChange={this.updatePeriodRanges}/>;
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
-    const editTable = <EditTable tableContent={tableContent} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
+    const editTable = <EditTable table={table} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
     const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify(this.state.table.toObject())}/>;
     const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
     const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML()}/>;
