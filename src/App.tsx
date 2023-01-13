@@ -27,6 +27,29 @@ const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
   );
 }
 
+type LoadTableProps = {
+  onJSONLoad: (json: string) => void;
+  onHTMLLoad: (htmlString: string) => void;
+}
+
+const LoadTable: React.FC<LoadTableProps> = (props) => {
+  const onJSONLoad = (json: string) => {
+    props.onJSONLoad(json);
+  }
+
+  const onHTMLLoad = (htmlString: string) => {
+    props.onHTMLLoad(htmlString);
+  }
+
+  return (
+    <>
+      <input type="button" ref="file"></input>
+      <input type="button" value="JSONを読み込む" onClick={event => onJSONLoad(event.button.toString())}/>
+      <input type="button" value="HTMLを読み込む" onClick={event => onHTMLLoad(event.button.toString())}/>
+    </>
+  );
+}
+
 type PeriodMaxiesProps = {
   onPeriodMaxChange: (periodMax: number) => void;
 }
@@ -346,6 +369,18 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.state = { table: new TimeTable.Table(5, 5) };
   }
 
+  private updateFromJSON = (json: string) => {
+    const table = this.state.table;
+    table.fromJSON(json);
+    this.setState({ table: table });
+  }
+
+  private updateFromHTML = (htmlString: string) => {
+    const table = this.state.table;
+    table.fromHTML(htmlString);
+    this.setState({ table: table });
+  }
+
   private updateDowSize = (num: number) => {
     const table = this.state.table;
     table.setDowSize(num);
@@ -398,6 +433,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
 
   render() {
     const table = this.state.table;
+    const loadTable = <LoadTable onJSONLoad={string => this.updateFromJSON(string)} onHTMLLoad={string => this.updateFromHTML(string)}/>;
     const dowMaxies = <DowMaxies onDowMaxChange={num => this.updateDowSize(num)}/>;
     const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.updatePeriodSize(num)}/>;
     const periodRanges = <PeriodRanges maxPeriod={table.getPeriodSize()} onPeriodChange={this.updatePeriodRanges}/>;
@@ -408,6 +444,14 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML()}/>;
     return (
       <>
+        <div>
+          <h1>時間割データの読込</h1>
+          <p>過去に保存した時間割データを読み込めば、編集ができます。</p>
+          {loadTable}
+        </div>
+        <div>
+          <h1>時間割の入力</h1>
+        </div>
         <div>
           <h2>曜日</h2>
           {dowMaxies}
@@ -427,6 +471,12 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
         <div>
           <h2>時間割の入力</h2>
           {editTable}
+        </div>
+        <div>
+          <h1>時間割データの保存</h1>
+          <p>時間割データは、JSON、Markdown、HTMLのいずれかの形式で保存できます。</p>
+          <p>JSONまたはHTMLの場合、このページで読み込めば既存の時間割を編集できます。</p>
+          <p>ただし、HTMLで読み込む場合はセルのリンクなし項目のプレースホルダが保存されません。ご了承ください。</p>
         </div>
         <div>
           <h2>時間割をJSONで保存</h2>

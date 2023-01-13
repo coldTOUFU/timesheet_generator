@@ -234,7 +234,8 @@ export namespace TimeTable {
       return `<html><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
     }
 
-    public fromObject(src: any) {
+    public fromJSON(json: string) {
+      const src = JSON.parse(json);
       if (!src.dowSize || !src.periodSize || !src.periodRanges || !src.fields) {
         throw FailedToParseObjectError;
       }
