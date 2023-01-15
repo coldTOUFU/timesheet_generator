@@ -43,9 +43,10 @@ const LoadTable: React.FC<LoadTableProps> = (props) => {
 
   return (
     <>
-      <input type="button" ref="file"></input>
-      <input type="button" value="JSONを読み込む" onClick={event => onJSONLoad(event.button.toString())}/>
-      <input type="button" value="HTMLを読み込む" onClick={event => onHTMLLoad(event.button.toString())}/>
+      <h2>JSONを読み込む</h2>
+      <input type="file" accept=".json" onClick={event => onJSONLoad(event.button.toString())}/>
+      <h2>HTMLを読み込む</h2>
+      <input type="file" accept=".html" onClick={event => onHTMLLoad(event.button.toString())}/>
     </>
   );
 }
