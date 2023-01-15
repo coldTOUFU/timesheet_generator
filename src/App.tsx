@@ -33,20 +33,38 @@ type LoadTableProps = {
 }
 
 const LoadTable: React.FC<LoadTableProps> = (props) => {
-  const onJSONLoad = (json: string) => {
-    props.onJSONLoad(json);
+  const onJSONLoad = (file: File | undefined) => {
+    if (file) {
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        const result = fileReader.result;
+        if (result) {
+          props.onJSONLoad(result as string);
+        }
+      };
+      fileReader.readAsText(file)
+    }
   }
 
-  const onHTMLLoad = (htmlString: string) => {
-    props.onHTMLLoad(htmlString);
+  const onHTMLLoad = (file: File | undefined) => {
+    if (file) {
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        const result = fileReader.result;
+        if (result) {
+          props.onHTMLLoad(result as string);
+        }
+      };
+      fileReader.readAsText(file)
+    }
   }
 
   return (
     <>
       <h2>JSONを読み込む</h2>
-      <input type="file" accept=".json" onClick={event => onJSONLoad(event.button.toString())}/>
+      <input type="file" accept=".json" onChange={event => onJSONLoad(event.target.files?.[0])}/>
       <h2>HTMLを読み込む</h2>
-      <input type="file" accept=".html" onClick={event => onHTMLLoad(event.button.toString())}/>
+      <input type="file" accept=".html" onChange={event => onHTMLLoad(event.target.files?.[0])}/>
     </>
   );
 }
@@ -289,16 +307,17 @@ const EditTable: React.FC<EditTableProps> = (props) => {
                   {
                     /* i時限の行を曜日列方向になめる。 */
                     [...Array(dowN).keys()].map((dowIdx) => {
+                      const field = props.table.getFields()[dowIdx][periodIdx];
                       /* セル中の各項目。 */
                       return (
                         <td key={dowIdx.toString()}>
-                          <input type="text" name="fieldTitle" placeholder="タイトル"
+                          <input type="text" name="fieldTitle" placeholder="タイトル" value={field.name}
                               onChange={event => onEditFieldTitleChange(dowIdx, periodIdx, event.target.value)}/>
                           {
-                            props.table.getFields()[dowIdx][periodIdx].items.map((item, itemIdx) => {
+                            field.items.map((item, itemIdx) => {
                               const placeholder = item.name + (item.isLink ? "のURL" : "");
                               return <div key={itemIdx.toString()}>
-                                       <input type="text" name="fieldText" placeholder={placeholder}
+                                       <input type="text" name="fieldText" placeholder={placeholder} value={item.value}
                                               onChange={event => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, event.target.value)}/>
                                      </div>
                             })
@@ -401,7 +420,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   };
 
   private updateFieldTitle = (dowIdx: number, periodIdx: number, title: string) => {
-    const field = this.state.table.getField(periodIdx, dowIdx);
+    const field = this.state.table.getField(dowIdx, periodIdx);
     field.name = title;
     const table = this.state.table;
     table.setField(field, dowIdx, periodIdx);
@@ -425,7 +444,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   };
 
   private updateFieldItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
-    const field = this.state.table.getField(periodIdx, dowIdx);
+    const field = this.state.table.getField(dowIdx, periodIdx);
     field.items[itemIdx].value = value;
     const table = this.state.table;
     table.setField(field, dowIdx, periodIdx);

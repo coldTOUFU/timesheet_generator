@@ -45,7 +45,7 @@ export namespace TimeTable {
 
       this.fields = Array(this.dowSize);
       for (let dowIdx = 0; dowIdx < this.dowSize; dowIdx++) {
-        this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
+        this.fields[dowIdx] = new Array(this.periodSize).fill(null).map(_ => this.initField());
       }
     }
 
@@ -54,7 +54,7 @@ export namespace TimeTable {
 
       if (dowSize > this.dowSize) {
         for (let dowIdx = this.dowSize; dowIdx < dowSize; dowIdx++) {
-          this.fields[dowIdx] = new Array(this.periodSize).fill(this.initField());
+          this.fields[dowIdx] = new Array(this.dowSize).fill(null).map(_ => this.initField());
         }
       }
       else if (dowSize < this.dowSize) {
@@ -131,7 +131,7 @@ export namespace TimeTable {
         for (let periodIdx = 0; periodIdx < this.periodSize; periodIdx++) {
           this.fields[dowIdx][periodIdx] = {
             "name":  this.fields[dowIdx][periodIdx]["name"],
-            "items": this.cloneJSON(item_tmpl)
+            "items": this.cloneObject(item_tmpl)
           };
         }
       }
@@ -159,15 +159,15 @@ export namespace TimeTable {
         if (targetField.items[i].isLink !== f.items[i].isLink) { throw WrongItemStructureError; }
       }
 
-      this.fields[dowIdx][periodIdx] = this.cloneJSON(f);
+      this.fields[dowIdx][periodIdx] = this.cloneObject(f);
     }
 
     public getField(dowIdx: number, periodIdx: number): Field {
-      return this.fields[dowIdx][periodIdx];
+      return this.cloneObject(this.fields[dowIdx][periodIdx]);
     }
 
     public getFields(): Field[][] {
-      return this.fields;
+      return this.cloneObject(this.fields);
     }
 
     public toObject(): { dowSize: number, periodSize: number, periodRanges : PeriodRange[], fields: Field[][] } {
@@ -323,7 +323,7 @@ export namespace TimeTable {
       return r;
     }
 
-    private cloneJSON(obj: Object) {
+    private cloneObject(obj: Object) {
       return JSON.parse(JSON.stringify(obj))
     }
 
