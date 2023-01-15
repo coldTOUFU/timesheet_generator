@@ -207,7 +207,7 @@ export namespace TimeTable {
       return mdStr;
     }
 
-    public toHTML(): string {
+    public toHTML(css_txt=""): string {
       const dowArray = this.getDowArray();
       const periodArray = this.getPeriodArray();
 
@@ -231,7 +231,7 @@ export namespace TimeTable {
         }).join("");
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");
-      return `<html><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
+      return `<html><head><style>${css_txt}</style></head><body><table><thead>${thStr}</thead><tbody>${tbodyStr}</tbody></table></body></html>`;
     }
 
     public fromJSON(json: string) {

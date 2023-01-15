@@ -441,7 +441,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const editTable = <EditTable table={table} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
     const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify(this.state.table.toObject())}/>;
     const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
-    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML()}/>;
+    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML('th {background-color: gray;}table,th,td {border: solid;}')}/>;
     return (
       <>
         <div>
