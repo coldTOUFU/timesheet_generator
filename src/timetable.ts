@@ -255,7 +255,7 @@ export namespace TimeTable {
       const rows = Array.from(htmlNode.querySelectorAll("tbody tr")) as HTMLTableRowElement[];
       if (rows.length === 0) { throw FailedToParseHTMLError; }
       this.periodRanges = rows.map((tr) => {
-        const matches = tr.querySelector("th")?.innerHTML?.match(/\d\d:\d\d/);
+        const matches = tr.querySelector("th")?.innerHTML?.match(/\d\d:\d\d/g);
         if (!matches) { throw FailedToParseHTMLError; }
         return {
           startHour: matches[0].substring(0, 2),
