@@ -21,6 +21,10 @@ export namespace TimeTable {
   }
 
   export class Table {
+    static readonly periodHeaderClassName = 'period-header';
+    static readonly dowHeaderClassName = 'dow-header';
+    static readonly fieldClassName = 'field-header';
+
     private dowSize: number;
     private periodSize: number;
     private periodRanges: PeriodRange[];
@@ -212,13 +216,13 @@ export namespace TimeTable {
       const periodArray = this.getPeriodArray();
 
       /* 曜日ヘッダを作る。 */
-      let thStr = `<tr><th></th><th>${dowArray.join("</th><th>")}</th></tr>`
+      let thStr = `<tr class=${Table.dowHeaderClassName}><th></th><th>${dowArray.join("</th><th>")}</th></tr>`
 
       /* 表のボディを作る。 */
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
       let tbodyStr = periodArray.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
-        const periodStr = `<th>${period.period}<br>${period.start}<br>～<br>${period.end}</th>`;
+        const periodStr = `<th class=${Table.periodHeaderClassName}>${period.period}<br>${period.start}<br>～<br>${period.end}</th>`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
         const rowStr = dowArray.map((_, dowIdx) => {
@@ -227,7 +231,7 @@ export namespace TimeTable {
               .map(item => item.isLink ?
               `<a href="${item.value}">${item.name}</a>` :
               item.value).join("<br>");
-          return `<td>${this.fields[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
+          return `<td class=${Table.fieldClassName}>${this.fields[dowIdx][periodIdx].name}<br>${itemsStr}</td>`;
         }).join("");
         return `<tr>${periodStr}${rowStr}</tr>`;
       }).join("\n");

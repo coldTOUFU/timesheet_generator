@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { TimeTable } from './timetable'
+import { CSS } from './style'
 
 type DowMaxiesProps = {
   onDowMaxChange: (dowMax: number) => void;
@@ -336,6 +337,102 @@ const EditTable: React.FC<EditTableProps> = (props) => {
   );
 }
 
+type EditTableStyleProps = {
+  onEditTableStyleChange: (style: CSS.Rules) => void;
+}
+
+const EditTableStyle: React.FC<EditTableStyleProps> = (props) => {
+  const onEditTableStyleChange = (selector: string, property: string, value: string) => {
+    const declarations: CSS.Declarations = {[property]: value};
+    props.onEditTableStyleChange({[selector]: declarations});
+  }
+
+  return (
+    <>
+      <p>ヘッダの背景色</p>
+      <input list="header-background-colors" onChange={event => onEditTableStyleChange('th', 'background-color', event.target.value)}>
+      </input>
+      <datalist id="header-background-colors">
+        <option value="white"/>
+        <option value="gray"/>
+        <option value="black"/>
+        <option value="red"/>
+        <option value="orange"/>
+        <option value="yellow"/>
+        <option value="lime green"/>
+        <option value="green"/>
+        <option value="blue-green"/>
+        <option value="cyan"/>
+        <option value="sky blue"/>
+        <option value="blue"/>
+        <option value="purple"/>
+        <option value="magenta"/>
+        <option value="pink"/>
+      </datalist>
+      <p>ヘッダの文字色</p>
+      <input list="header-char-colors" onChange={event => onEditTableStyleChange('th', 'color', event.target.value)}>
+      </input>
+      <datalist id="header-char-colors">
+        <option value="white"/>
+        <option value="gray"/>
+        <option value="black"/>
+        <option value="red"/>
+        <option value="orange"/>
+        <option value="yellow"/>
+        <option value="lime green"/>
+        <option value="green"/>
+        <option value="blue-green"/>
+        <option value="cyan"/>
+        <option value="sky blue"/>
+        <option value="blue"/>
+        <option value="purple"/>
+        <option value="magenta"/>
+        <option value="pink"/>
+      </datalist>
+      <p>ボディの背景色</p>
+      <input list="body-background-colors" onChange={event => onEditTableStyleChange('td', 'background-color', event.target.value)}>
+      </input>
+      <datalist id="body-background-colors">
+        <option value="white"/>
+        <option value="gray"/>
+        <option value="black"/>
+        <option value="red"/>
+        <option value="orange"/>
+        <option value="yellow"/>
+        <option value="lime green"/>
+        <option value="green"/>
+        <option value="blue-green"/>
+        <option value="cyan"/>
+        <option value="sky blue"/>
+        <option value="blue"/>
+        <option value="purple"/>
+        <option value="magenta"/>
+        <option value="pink"/>
+      </datalist>
+      <p>ボディの文字色</p>
+      <input list="body-char-colors" onChange={event => onEditTableStyleChange('td', 'color', event.target.value)}>
+      </input>
+      <datalist id="body-char-colors">
+        <option value="white"/>
+        <option value="gray"/>
+        <option value="black"/>
+        <option value="red"/>
+        <option value="orange"/>
+        <option value="yellow"/>
+        <option value="lime green"/>
+        <option value="green"/>
+        <option value="blue-green"/>
+        <option value="cyan"/>
+        <option value="sky blue"/>
+        <option value="blue"/>
+        <option value="purple"/>
+        <option value="magenta"/>
+        <option value="pink"/>
+      </datalist>
+    </>
+  );
+}
+
 const DownloadString = (filename: string, str: string) => {
   const blob = new Blob([str], {type: 'text/plain'});
   const download_link = document.createElement('a');
@@ -382,11 +479,15 @@ const DownloadAsHTML: React.FC<DownloadAsHTMLProps> = (props) => {
 
 type TimeTableRendererState = {
   table: TimeTable.Table;
+  style: CSS.Style;
 }
 class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   constructor(props: {}) {
     super(props);
-    this.state = { table: new TimeTable.Table(5, 5) };
+    this.state = {
+      table: new TimeTable.Table(5, 5),
+      style: CSS.Style.parseStyleSheet('th {background-color: gray;}table,th,td {border: solid;}')
+    };
   }
 
   private updateFromJSON = (json: string) => {
@@ -451,6 +552,12 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
+  private updateTableStyle = (rule: CSS.Rules) => {
+    const style = this.state.style;
+    style.addRule(rule)
+    this.setState({ style: style });
+  };
+
   render() {
     const table = this.state.table;
     const loadTable = <LoadTable onJSONLoad={string => this.updateFromJSON(string)} onHTMLLoad={string => this.updateFromHTML(string)}/>;
@@ -459,9 +566,10 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const periodRanges = <PeriodRanges maxPeriod={table.getPeriodSize()} onPeriodChange={this.updatePeriodRanges}/>;
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
     const editTable = <EditTable table={table} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
+    const editTableStyle = <EditTableStyle onEditTableStyleChange={this.updateTableStyle}/>;
     const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify(this.state.table.toObject())}/>;
     const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
-    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML('th {background-color: gray;}table,th,td {border: solid;}')}/>;
+    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML(this.state.style.toString())}/>;
     return (
       <>
         <div>
@@ -491,6 +599,11 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
         <div>
           <h2>時間割の入力</h2>
           {editTable}
+        </div>
+        <div>
+          <h1>デザインの設定</h1>
+          <p>HTMLのデザイン(色・罫線)を設定できます。</p>
+          {editTableStyle}
         </div>
         <div>
           <h1>時間割データの保存</h1>
