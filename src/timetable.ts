@@ -30,7 +30,7 @@ export namespace TimeTable {
     private periodRanges: PeriodRange[];
     private fields: TimeTable.Field[][]; // 曜日ごとで触りたいので、[dowIdx][periodIdx]の形でアクセスすること。
 
-    constructor(dowSize: number, periodSize: number) {
+    constructor(dowSize: number = 5, periodSize: number = 5) {
       if (dowSize <= 0 || dowSize > 7) { dowSize = TimeTableConst.dowDefaultSize; }
       if (periodSize <= 0 || periodSize > TimeTableConst.periodMaxSize) { periodSize = TimeTableConst.periodDefaultSize; }
 
@@ -195,7 +195,7 @@ export namespace TimeTable {
       /* 表の行は時限と対応しているから、各時限で回して行をつなげ、表を作る。 */
       mdStr += periodArray.map((period, periodIdx) => {
         /* 行ヘッダー部。 */
-        const periodStr = `${period.period}<br>${period.start}<br>～<br>${period.end}`;
+        const periodStr: string = `${period.period}<br>${period.start}<br>～<br>${period.end}`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
         const rowStr = dowArray.map((_, dowIdx) => {
@@ -240,13 +240,17 @@ export namespace TimeTable {
 
     public fromJSON(json: string) {
       const src = JSON.parse(json);
-      if (!src.dowSize || !src.periodSize || !src.periodRanges || !src.fields) {
+      if (!src.table) {
         throw FailedToParseObjectError;
       }
-      this.dowSize = src.dowSize;
-      this.periodSize = src.periodSize;
-      this.periodRanges = src.periodRanges;
-      this.fields = src.fields;
+      const tableSrc = src.table;
+      if (!tableSrc.dowSize || !tableSrc.periodSize || !tableSrc.periodRanges || !tableSrc.fields) {
+        throw FailedToParseObjectError;
+      }
+      this.dowSize = tableSrc.dowSize;
+      this.periodSize = tableSrc.periodSize;
+      this.periodRanges = tableSrc.periodRanges;
+      this.fields = tableSrc.fields;
     }
 
     public fromHTML(src: string) {

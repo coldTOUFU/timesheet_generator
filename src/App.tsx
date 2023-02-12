@@ -485,21 +485,25 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      table: new TimeTable.Table(5, 5),
-      style: CSS.Style.parseStyleSheet('th {background-color: gray;}table,th,td {border: solid;}')
+      table: new TimeTable.Table(),
+      style: new CSS.Style()
     };
   }
 
   private updateFromJSON = (json: string) => {
     const table = this.state.table;
     table.fromJSON(json);
-    this.setState({ table: table });
+    const style = new CSS.Style();
+    style.fromJSON(json);
+    this.setState({ table: table, style: style });
   }
 
   private updateFromHTML = (htmlString: string) => {
-    const table = this.state.table;
+    const table = new TimeTable.Table();
     table.fromHTML(htmlString);
-    this.setState({ table: table });
+    const style = new CSS.Style();
+    style.fromHTML(htmlString);
+    this.setState({ table: table, style: style });
   }
 
   private updateDowSize = (num: number) => {

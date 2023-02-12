@@ -1,3 +1,5 @@
+import { FailedToParseHTMLError, FailedToParseObjectError } from "./error/style_erorr"
+
 export namespace CSS {
   export type Declarations = {
     [property: string]: string
@@ -18,6 +20,7 @@ export namespace CSS {
       }
     }
 
+    /* 一括指定プロパティに対応していないので注意(プロパティは新しいもので上書きされる)。 */
     public addRule(rules: Rules) {
       for (const selector in rules) {
         if (this.rules[selector]) {
@@ -40,47 +43,43 @@ export namespace CSS {
       return style_str;
     }
 
-    static parseStyleSheet(txt: string): Style {
-      let style = new Style();
-      const rule_txts = txt.split("}")
+    public fromString(str: string) {
+      this.rules = {};
+      const rule_strs = str.split("}")
                            .map(rule => rule.trim())
                            .filter(rule => rule.length > 0); // 終端要素が""なので除く。
-      rule_txts.forEach(rule_txt => {
-        const [selectors, declaration_txt] = rule_txt.split("{")
-                                                     .map(txt => txt.trim());
-        const declaration_txts = declaration_txt.split(";")
+      rule_strs.forEach(rule_str => {
+        const [selectors, declaration_str] = rule_str.split("{")
+                                                     .map(str => str.trim());
+        const declaration_strs = declaration_str.split(";")
                                                 .map(dec => dec.trim())
                                                 .filter(dec => dec.length > 0);
         const declarations: Declarations = {};
-        declaration_txts.forEach(dec_txt => {
-          const [property, value] = dec_txt.split(":")
+        declaration_strs.forEach(dec_str => {
+          const [property, value] = dec_str.split(":")
                                            .map(e => e.trim());
           declarations[property] = value
         });
         selectors.split(",").forEach(selector => {
-          style.addRule({ [selector]: declarations })
+          this.addRule({ [selector]: declarations })
         })
       });
+    }
 
-// th {background-color: gray;}table,th,td {border: solid;}
-      
+    public fromJSON(json: string) {
+      const src = JSON.parse(json);
+      if (!src.style || !src.style.rules) {
+        throw FailedToParseObjectError;
+      }
 
-// const cssObject = cssString
-//   .split("}")
-//   .map((rule) => rule.trim())
-//   .filter((rule) => rule.length > 0)
-//   .reduce((acc, rule) => {
-//     const [selectors, styles] = rule.split("{");
-//     selectors
-//       .split(",")
-//       .map((selector) => selector.trim())
-//       .forEach((selector) => {
-//         acc[selector] = styles;
-//       });
-//     return acc;
-//   }, {});
+      this.rules = src.style.rules;
+    }
 
-      return style;
+    public fromHTML(str: String) {
+      const matches = str.match(/<style>.+<\/style>/g);
+      if (!matches) { throw FailedToParseHTMLError; }
+
+      this.fromString(matches[0].substring(7, matches[0].length - 8))
     }
   }
 }
