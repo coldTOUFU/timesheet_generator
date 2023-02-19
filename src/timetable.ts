@@ -174,15 +174,6 @@ export namespace TimeTable {
       return this.cloneObject(this.fields);
     }
 
-    public toObject(): { dowSize: number, periodSize: number, periodRanges : PeriodRange[], fields: Field[][] } {
-      return {
-        dowSize: this.dowSize,
-        periodSize: this.periodSize,
-        periodRanges: this.periodRanges,
-        fields: this.fields
-      };
-    }
-
     public toMarkdown(): string {
       const dowArray = this.getDowArray();
       const periodArray = this.getPeriodArray();
@@ -225,9 +216,9 @@ export namespace TimeTable {
         const periodStr = `<th class=${Table.periodHeaderClassName}>${period.period}<br>${period.start}<br>～<br>${period.end}</th>`;
         /* 行のヘッダー以外を作る。 */
         /* 列は曜日と対応しているから、今見ている時限の各曜日で回して連結すれば、対応する行ができる。 */
-        const rowStr = dowArray.map((_, dowIdx) => {
+        const rowStr: string = dowArray.map((_, dowIdx) => {
           /* セル1つ分を作る。fieldsの2次元配列は曜日、時限の順にアクセスすることに注意。 */
-          const itemsStr = this.fields[dowIdx][periodIdx].items
+          const itemsStr: string = this.fields[dowIdx][periodIdx].items
               .map(item => item.isLink ?
               `<a href="${item.value}">${item.name}</a>` :
               item.value).join("<br>");
@@ -284,7 +275,7 @@ export namespace TimeTable {
               let value = "";
               if (item.includes("<a")) {
                 isLink = true;
-                name = item.replace(/<.+>/g, '');
+                name = item.replace(/<.+?>/g, '');
                 value = item.replace(/^<a href="/, '').replace(/".+/, '');
               } else {
                 value = item

@@ -571,7 +571,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
     const editTable = <EditTable table={table} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
     const editTableStyle = <EditTableStyle onEditTableStyleChange={this.updateTableStyle}/>;
-    const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify(this.state.table.toObject())}/>;
+    const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify({ table: this.state.table, style: this.state.style })}/>;
     const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
     const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML(this.state.style.toString())}/>;
     return (
