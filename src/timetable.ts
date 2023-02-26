@@ -112,6 +112,8 @@ export namespace TimeTable {
       }});
     }
 
+    public getPeriodRanges() : PeriodRange[] { return this.periodRanges; }
+
     public setPeriodRange(periodIdx: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) {
       if (periodIdx >= this.periodSize || periodIdx < 0) { throw PeriodOutOfRangeError; }
 

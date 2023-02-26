@@ -3,19 +3,20 @@ import React from 'react';
 import { TimeTable } from './timetable'
 import { CSS } from './style'
 
-type DowMaxiesProps = {
-  onDowMaxChange: (dowMax: number) => void;
+type DowSizeSelectProps = {
+  dowSize: number;
+  onDowSizeChange: (dowSize: number) => void;
 }
 
-const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
-  const onDowMaxChange = (num: number) => {
-    props.onDowMaxChange(num);
+const DowSizeSelect: React.FC<DowSizeSelectProps> = (props) => {
+  const onDowSizeChange = (num: number) => {
+    props.onDowSizeChange(num);
   }
 
   return (
     <>
       <p>何曜日まで入れるかを選んでください。</p>
-      <select defaultValue="5" onChange={event => onDowMaxChange(Number(event.target.value))}>
+      <select value={props.dowSize} onChange={event => onDowSizeChange(Number(event.target.value))}>
         <option value="1">月曜まで</option>
         <option value="2">火曜まで</option>
         <option value="3">水曜まで</option>
@@ -28,12 +29,12 @@ const DowMaxies: React.FC<DowMaxiesProps> = (props) => {
   );
 }
 
-type LoadTableProps = {
+type LoadTableFileProps = {
   onJSONLoad: (json: string) => void;
   onHTMLLoad: (htmlString: string) => void;
 }
 
-const LoadTable: React.FC<LoadTableProps> = (props) => {
+const LoadTableFile: React.FC<LoadTableFileProps> = (props) => {
   const onJSONLoad = (file: File | undefined) => {
     if (file) {
       const fileReader = new FileReader();
@@ -70,19 +71,20 @@ const LoadTable: React.FC<LoadTableProps> = (props) => {
   );
 }
 
-type PeriodMaxiesProps = {
-  onPeriodMaxChange: (periodMax: number) => void;
+type PeriodSizeSelectProps = {
+  periodSize: number;
+  onPeriodSizeChange: (periodSize: number) => void;
 }
 
-const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
-  const onPeriodMaxChange = (num: number) => {
-    props.onPeriodMaxChange(num);
+const PeriodSizeSelect: React.FC<PeriodSizeSelectProps> = (props) => {
+  const onPeriodSizeChange = (num: number) => {
+    props.onPeriodSizeChange(num);
   }
 
   return (
     <>
       <p>時限数を選んでください。</p>
-      <select defaultValue="5" onChange={event => onPeriodMaxChange(Number(event.target.value))}>
+      <select value={props.periodSize} onChange={event => onPeriodSizeChange(Number(event.target.value))}>
         <option value="1">1限まで</option>
         <option value="2">2限まで</option>
         <option value="3">3限まで</option>
@@ -98,12 +100,13 @@ const PeriodMaxies: React.FC<PeriodMaxiesProps> = (props) => {
   );
 }
 
-type PeriodRangeProps = {
+type PeriodRangeSelectProps = {
   period: number;
+  periodRange: TimeTable.PeriodRange;
   onPeriodChange: (period: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) => void;
 }
 
-const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
+const PeriodRangeSelect: React.FC<PeriodRangeSelectProps> = (props) => {
   const onPeriodHourRangeStChange = (hour: string) => {
     props.onPeriodChange(props.period, hour, undefined, undefined, undefined);
   }
@@ -119,7 +122,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
 
   return (
     <>
-      <select name="hourRangeSt" onChange={event => onPeriodHourRangeStChange(event.target.value)}>
+      <select value={props.periodRange.startHour} name="hourRangeSt" onChange={event => onPeriodHourRangeStChange(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -146,7 +149,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeSt" onChange={event => onPeriodMinuteRangeStChange(event.target.value)}>
+      <select value={props.periodRange.startMin} name="minuteRangeSt" onChange={event => onPeriodMinuteRangeStChange(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -161,7 +164,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="55">55</option>
       </select>
       ~
-      <select name="hourRangeEn" onChange={event => onPeriodHourRangeEnChange(event.target.value)}>
+      <select value={props.periodRange.endHour} name="hourRangeEn" onChange={event => onPeriodHourRangeEnChange(event.target.value)}>
         <option value="00">00</option>
         <option value="01">01</option>
         <option value="02">02</option>
@@ -188,7 +191,7 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
         <option value="23">23</option>
       </select>
       :
-      <select name="minuteRangeEn" onChange={event => onPeriodMinuteRangeEnChange(event.target.value)}>
+      <select value={props.periodRange.endMin} name="minuteRangeEn" onChange={event => onPeriodMinuteRangeEnChange(event.target.value)}>
         <option value="00">00</option>
         <option value="05">05</option>
         <option value="10">10</option>
@@ -206,20 +209,22 @@ const PeriodRange: React.FC<PeriodRangeProps> = (props) => {
   );
 }
 
-type PeriodRangesProps = {
-  maxPeriod: number;
+type PeriodRangeSelectsProps = {
+  periodSize: number;
+  periodRangeSelects: TimeTable.PeriodRange[];
   onPeriodChange: (period: number, startHour?: string, startMin?: string, endHour?: string, endMin?: string) => void;
 }
 
-const PeriodRanges: React.FC<PeriodRangesProps> = (props) => {
+const PeriodRangeSelects: React.FC<PeriodRangeSelectsProps> = (props) => {
   return (
     <>
       <p>開講時間の範囲を入力してください。</p>
       {
-        [...Array(props.maxPeriod).keys()].map((i) => {
+        [...Array(props.periodSize).keys()].map((i) => {
           return (
             <div key={i.toString()}>
-              <PeriodRange
+              <PeriodRangeSelect
+                periodRange={props.periodRangeSelects[i]}
                 period={i}
                 onPeriodChange={props.onPeriodChange}
               />
@@ -231,38 +236,39 @@ const PeriodRanges: React.FC<PeriodRangesProps> = (props) => {
   );
 }
 
-type FieldItemsProps = {
-  onFieldItemCheckBoxChange: (idx: number, checked: boolean) => void;
-  onFieldItemNameChange: (idx: number, txt: string) => void;
+type ItemInputProps = {
+  items: TimeTable.Item[];
+  onItemCheckBoxChange: (idx: number, checked: boolean) => void;
+  onItemNameChange: (idx: number, txt: string) => void;
 }
 
-const FieldItems: React.FC<FieldItemsProps> = (props) => {
-  const onFieldItemCheckBoxChange = (idx: number, checked: boolean) => {
-    props.onFieldItemCheckBoxChange(idx, checked);
+const ItemInput: React.FC<ItemInputProps> = (props) => {
+  const onItemCheckBoxChange = (idx: number, checked: boolean) => {
+    props.onItemCheckBoxChange(idx, checked);
   }
-  const onFieldItemNameChange = (idx: number, text: string) => {
-    props.onFieldItemNameChange(idx, text);
+  const onItemNameChange = (idx: number, text: string) => {
+    props.onItemNameChange(idx, text);
   }
 
   return (
     <>
       <div>
         <h3>項目1</h3>
-        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(0, event.target.checked)}/>
+        リンク有<input type="checkbox" checked={props.items[0].isLink} onChange={event => onItemCheckBoxChange(0, event.target.checked)}/>
         <br/>
-        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(0, event.target.value)}/>
+        <input type="text" placeholder="表示名" value={props.items[0].name} onChange={event => onItemNameChange(0, event.target.value)}/>
       </div>
       <div>
         <h3>項目2</h3>
-        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(1, event.target.checked)}/>
+        リンク有<input type="checkbox" checked={props.items[1].isLink} onChange={event => onItemCheckBoxChange(1, event.target.checked)}/>
         <br/>
-        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(1, event.target.value)}/>
+        <input type="text" placeholder="表示名" value={props.items[1].name} onChange={event => onItemNameChange(1, event.target.value)}/>
       </div>
       <div>
         <h3>項目3</h3>
-        リンク有<input type="checkbox" onChange={event => onFieldItemCheckBoxChange(2, event.target.checked)}/>
+        リンク有<input type="checkbox" checked={props.items[2].isLink} onChange={event => onItemCheckBoxChange(2, event.target.checked)}/>
         <br/>
-        <input type="text" placeholder="表示名" onChange={event => onFieldItemNameChange(2, event.target.value)}/>
+        <input type="text" placeholder="表示名" value={props.items[2].name} onChange={event => onItemNameChange(2, event.target.value)}/>
       </div>
     </>
   );
@@ -270,18 +276,18 @@ const FieldItems: React.FC<FieldItemsProps> = (props) => {
 
 type EditTableProps = {
   table: TimeTable.Table;
-  onEditFieldTitleChange: (dowIdx: number, periodIdx: number, txt: string) => void;
-  onEditFieldItemChange: (dowIdx: number, periodIdx: number, itemIdx: number, txt: string) => void;
+  onFieldNameChange: (dowIdx: number, periodIdx: number, txt: string) => void;
+  onItemValueChange: (dowIdx: number, periodIdx: number, itemIdx: number, txt: string) => void;
 }
 
 const EditTable: React.FC<EditTableProps> = (props) => {
-  const dowN = props.table.getDowSize();
-  const periodN = props.table.getPeriodSize();
-  const onEditFieldTitleChange = (dowIdx: number, periodIdx: number, text: string) => {
-    props.onEditFieldTitleChange(dowIdx, periodIdx, text);
+  const dowSize = props.table.getDowSize();
+  const periodSize = props.table.getPeriodSize();
+  const onFieldNameChange = (dowIdx: number, periodIdx: number, text: string) => {
+    props.onFieldNameChange(dowIdx, periodIdx, text);
   }
-  const onEditFieldItemChange = (dowIdx: number, periodIdx: number, itemIdx: number, text: string) => {
-    props.onEditFieldItemChange(dowIdx, periodIdx, itemIdx, text);
+  const onItemValueChange = (dowIdx: number, periodIdx: number, itemIdx: number, text: string) => {
+    props.onItemValueChange(dowIdx, periodIdx, itemIdx, text);
   }
 
   return (
@@ -301,25 +307,25 @@ const EditTable: React.FC<EditTableProps> = (props) => {
         <tbody>
           {
             /* 各i時限に対する処理。 */
-            [...Array(periodN).keys()].map((periodIdx) => {
+            [...Array(periodSize).keys()].map((periodIdx) => {
               return (
                 <tr key={periodIdx.toString()}>
                   <td>{props.table.getPeriodArray()[periodIdx].period}</td>
                   {
                     /* i時限の行を曜日列方向になめる。 */
-                    [...Array(dowN).keys()].map((dowIdx) => {
+                    [...Array(dowSize).keys()].map((dowIdx) => {
                       const field = props.table.getFields()[dowIdx][periodIdx];
                       /* セル中の各項目。 */
                       return (
                         <td key={dowIdx.toString()}>
                           <input type="text" name="fieldTitle" placeholder="タイトル" value={field.name}
-                              onChange={event => onEditFieldTitleChange(dowIdx, periodIdx, event.target.value)}/>
+                              onChange={event => onFieldNameChange(dowIdx, periodIdx, event.target.value)}/>
                           {
                             field.items.map((item, itemIdx) => {
                               const placeholder = item.name + (item.isLink ? "のURL" : "");
                               return <div key={itemIdx.toString()}>
                                        <input type="text" name="fieldText" placeholder={placeholder} value={item.value}
-                                              onChange={event => onEditFieldItemChange(dowIdx, periodIdx, itemIdx, event.target.value)}/>
+                                              onChange={event => onItemValueChange(dowIdx, periodIdx, itemIdx, event.target.value)}/>
                                      </div>
                             })
                           }
@@ -337,20 +343,20 @@ const EditTable: React.FC<EditTableProps> = (props) => {
   );
 }
 
-type EditTableStyleProps = {
-  onEditTableStyleChange: (style: CSS.Rules) => void;
+type StyleListProps = {
+  onStyleChange: (style: CSS.Rules) => void;
 }
 
-const EditTableStyle: React.FC<EditTableStyleProps> = (props) => {
-  const onEditTableStyleChange = (selector: string, property: string, value: string) => {
+const StyleList: React.FC<StyleListProps> = (props) => {
+  const onStyleChange = (selector: string, property: string, value: string) => {
     const declarations: CSS.Declarations = {[property]: value};
-    props.onEditTableStyleChange({[selector]: declarations});
+    props.onStyleChange({[selector]: declarations});
   }
 
   return (
     <>
       <p>ヘッダの背景色</p>
-      <input list="header-background-colors" onChange={event => onEditTableStyleChange('th', 'background-color', event.target.value)}>
+      <input list="header-background-colors" onChange={event => onStyleChange('th', 'background-color', event.target.value)}>
       </input>
       <datalist id="header-background-colors">
         <option value="white"/>
@@ -370,7 +376,7 @@ const EditTableStyle: React.FC<EditTableStyleProps> = (props) => {
         <option value="pink"/>
       </datalist>
       <p>ヘッダの文字色</p>
-      <input list="header-char-colors" onChange={event => onEditTableStyleChange('th', 'color', event.target.value)}>
+      <input list="header-char-colors" onChange={event => onStyleChange('th', 'color', event.target.value)}>
       </input>
       <datalist id="header-char-colors">
         <option value="white"/>
@@ -390,7 +396,7 @@ const EditTableStyle: React.FC<EditTableStyleProps> = (props) => {
         <option value="pink"/>
       </datalist>
       <p>ボディの背景色</p>
-      <input list="body-background-colors" onChange={event => onEditTableStyleChange('td', 'background-color', event.target.value)}>
+      <input list="body-background-colors" onChange={event => onStyleChange('td', 'background-color', event.target.value)}>
       </input>
       <datalist id="body-background-colors">
         <option value="white"/>
@@ -410,7 +416,7 @@ const EditTableStyle: React.FC<EditTableStyleProps> = (props) => {
         <option value="pink"/>
       </datalist>
       <p>ボディの文字色</p>
-      <input list="body-char-colors" onChange={event => onEditTableStyleChange('td', 'color', event.target.value)}>
+      <input list="body-char-colors" onChange={event => onStyleChange('td', 'color', event.target.value)}>
       </input>
       <datalist id="body-char-colors">
         <option value="white"/>
@@ -441,11 +447,11 @@ const DownloadString = (filename: string, str: string) => {
   download_link.click();
 }
 
-type DownloadAsJSONProps = {
+type JSONDownloadButtonProps = {
   jsonStr: string;
 }
 
-const DownloadAsJSON: React.FC<DownloadAsJSONProps> = (props) => {
+const JSONDownloadButton: React.FC<JSONDownloadButtonProps> = (props) => {
   return (
     <input type="button"
         onClick={() => DownloadString("timetable.json", props.jsonStr)}
@@ -453,11 +459,11 @@ const DownloadAsJSON: React.FC<DownloadAsJSONProps> = (props) => {
   );
 }
 
-type DownloadAsMarkdownProps = {
+type MarkdownDownloadButtonProps = {
   markdownStr: string;
 }
 
-const DownloadAsMarkdown: React.FC<DownloadAsMarkdownProps> = (props) => {
+const MarkdownDownloadButton: React.FC<MarkdownDownloadButtonProps> = (props) => {
   return (
     <input type="button"
         onClick={() => DownloadString("timetable.md", props.markdownStr)}
@@ -465,11 +471,11 @@ const DownloadAsMarkdown: React.FC<DownloadAsMarkdownProps> = (props) => {
   );
 }
 
-type DownloadAsHTMLProps = {
+type HTMLDownloadButtonProps = {
   htmlStr: string;
 }
 
-const DownloadAsHTML: React.FC<DownloadAsHTMLProps> = (props) => {
+const HTMLDownloadButton: React.FC<HTMLDownloadButtonProps> = (props) => {
   return (
     <input type="button"
         onClick={() => DownloadString("timetable.html", props.htmlStr)}
@@ -524,7 +530,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updateFieldTitle = (dowIdx: number, periodIdx: number, title: string) => {
+  private updateFieldName = (dowIdx: number, periodIdx: number, title: string) => {
     const field = this.state.table.getField(dowIdx, periodIdx);
     field.name = title;
     const table = this.state.table;
@@ -532,7 +538,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updateFieldItemIsLink = (idx: number, isLink: boolean) => {
+  private updateItemIsLink = (idx: number, isLink: boolean) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].isLink = isLink;
     const table = this.state.table;
@@ -540,7 +546,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updateFieldItemName = (idx: number, name: string) => {
+  private updateItemName = (idx: number, name: string) => {
     const item_tmpls = this.state.table.getItemStructure();
     item_tmpls[idx].name = name;
     const table = this.state.table;
@@ -548,7 +554,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updateFieldItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
+  private updateItemValue = (dowIdx: number, periodIdx: number, itemIdx: number, value: string) => {
     const field = this.state.table.getField(dowIdx, periodIdx);
     field.items[itemIdx].value = value;
     const table = this.state.table;
@@ -556,7 +562,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     this.setState({ table: table });
   };
 
-  private updateTableStyle = (rule: CSS.Rules) => {
+  private updateStyle = (rule: CSS.Rules) => {
     const style = this.state.style;
     style.addRule(rule)
     this.setState({ style: style });
@@ -564,41 +570,41 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
 
   render() {
     const table = this.state.table;
-    const loadTable = <LoadTable onJSONLoad={string => this.updateFromJSON(string)} onHTMLLoad={string => this.updateFromHTML(string)}/>;
-    const dowMaxies = <DowMaxies onDowMaxChange={num => this.updateDowSize(num)}/>;
-    const periodMaxies = <PeriodMaxies onPeriodMaxChange={num => this.updatePeriodSize(num)}/>;
-    const periodRanges = <PeriodRanges maxPeriod={table.getPeriodSize()} onPeriodChange={this.updatePeriodRanges}/>;
-    const fieldItems = <FieldItems onFieldItemCheckBoxChange={this.updateFieldItemIsLink} onFieldItemNameChange={this.updateFieldItemName}/>;
-    const editTable = <EditTable table={table} onEditFieldTitleChange={this.updateFieldTitle} onEditFieldItemChange={this.updateFieldItemValue}/>;
-    const editTableStyle = <EditTableStyle onEditTableStyleChange={this.updateTableStyle}/>;
-    const downloadAsJSON = <DownloadAsJSON jsonStr={JSON.stringify({ table: this.state.table, style: this.state.style })}/>;
-    const downloadAsMarkdown = <DownloadAsMarkdown markdownStr={this.state.table.toMarkdown()}/>;
-    const downloadAsHTML = <DownloadAsHTML htmlStr={this.state.table.toHTML(this.state.style.toString())}/>;
+    const loadTableFile = <LoadTableFile onJSONLoad={string => this.updateFromJSON(string)} onHTMLLoad={string => this.updateFromHTML(string)}/>;
+    const dowSizeSelect = <DowSizeSelect dowSize={table.getDowSize()} onDowSizeChange={num => this.updateDowSize(num)}/>;
+    const periodSizeSelect = <PeriodSizeSelect periodSize={table.getPeriodSize()}  onPeriodSizeChange={num => this.updatePeriodSize(num)}/>;
+    const periodRangeSelects = <PeriodRangeSelects periodSize={table.getPeriodSize()} periodRangeSelects={table.getPeriodRanges()} onPeriodChange={this.updatePeriodRanges}/>;
+    const itemInput = <ItemInput items={table.getItemStructure()} onItemCheckBoxChange={this.updateItemIsLink} onItemNameChange={this.updateItemName}/>;
+    const editTable = <EditTable table={table} onFieldNameChange={this.updateFieldName} onItemValueChange={this.updateItemValue}/>;
+    const styleList = <StyleList onStyleChange={this.updateStyle}/>;
+    const jsonDownloadButton = <JSONDownloadButton jsonStr={JSON.stringify({ table: this.state.table, style: this.state.style })}/>;
+    const markdownDownloadButton = <MarkdownDownloadButton markdownStr={this.state.table.toMarkdown()}/>;
+    const htmlDownloadButton = <HTMLDownloadButton htmlStr={this.state.table.toHTML(this.state.style.toString())}/>;
     return (
       <>
         <div>
           <h1>時間割データの読込</h1>
           <p>過去に保存した時間割データを読み込めば、編集ができます。</p>
-          {loadTable}
+          {loadTableFile}
         </div>
         <div>
           <h1>時間割の入力</h1>
         </div>
         <div>
           <h2>曜日</h2>
-          {dowMaxies}
+          {dowSizeSelect}
         </div>
         <div>
           <h2>時限</h2>
-          {periodMaxies}
+          {periodSizeSelect}
         </div>
         <div>
           <h2>時限の範囲</h2>
-          {periodRanges}
+          {periodRangeSelects}
         </div>
         <div>
           <h2>コマの項目</h2>
-          {fieldItems}
+          {itemInput}
         </div>
         <div>
           <h2>時間割の入力</h2>
@@ -607,7 +613,7 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
         <div>
           <h1>デザインの設定</h1>
           <p>HTMLのデザイン(色・罫線)を設定できます。</p>
-          {editTableStyle}
+          {styleList}
         </div>
         <div>
           <h1>時間割データの保存</h1>
@@ -617,15 +623,15 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
         </div>
         <div>
           <h2>時間割をJSONで保存</h2>
-          {downloadAsJSON}
+          {jsonDownloadButton}
         </div>
         <div>
           <h2>時間割をMarkdownで保存</h2>
-          {downloadAsMarkdown}
+          {markdownDownloadButton}
         </div>
         <div>
           <h2>時間割をHTMLで保存</h2>
-          {downloadAsHTML}
+          {htmlDownloadButton}
         </div>
       </>
     );
