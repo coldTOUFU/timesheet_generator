@@ -58,7 +58,7 @@ export namespace TimeTable {
 
       if (dowSize > this.dowSize) {
         for (let dowIdx = this.dowSize; dowIdx < dowSize; dowIdx++) {
-          this.fields[dowIdx] = new Array(this.dowSize).fill(null).map(_ => this.initField());
+          this.fields[dowIdx] = new Array(this.periodSize).fill(null).map(_ => this.initField());
         }
       }
       else if (dowSize < this.dowSize) {
