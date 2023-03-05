@@ -344,6 +344,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
 }
 
 type StyleListProps = {
+  style: CSS.Style;
   onStyleChange: (style: CSS.Rules) => void;
 }
 
@@ -356,7 +357,7 @@ const StyleList: React.FC<StyleListProps> = (props) => {
   return (
     <>
       <p>ヘッダの背景色</p>
-      <input list="header-background-colors" onChange={event => onStyleChange('th', 'background-color', event.target.value)}>
+      <input list="header-background-colors" value={props.style.getRules()['th']?.['background-color'] || ''} onChange={event => onStyleChange('th', 'background-color', event.target.value)}>
       </input>
       <datalist id="header-background-colors">
         <option value="white"/>
@@ -365,18 +366,18 @@ const StyleList: React.FC<StyleListProps> = (props) => {
         <option value="red"/>
         <option value="orange"/>
         <option value="yellow"/>
-        <option value="lime green"/>
+        <option value="limegreen"/>
         <option value="green"/>
         <option value="blue-green"/>
         <option value="cyan"/>
-        <option value="sky blue"/>
+        <option value="skyblue"/>
         <option value="blue"/>
         <option value="purple"/>
         <option value="magenta"/>
         <option value="pink"/>
       </datalist>
       <p>ヘッダの文字色</p>
-      <input list="header-char-colors" onChange={event => onStyleChange('th', 'color', event.target.value)}>
+      <input list="header-char-colors" value={props.style.getRules()['th']?.['color'] || ''} onChange={event => onStyleChange('th', 'color', event.target.value)}>
       </input>
       <datalist id="header-char-colors">
         <option value="white"/>
@@ -385,18 +386,18 @@ const StyleList: React.FC<StyleListProps> = (props) => {
         <option value="red"/>
         <option value="orange"/>
         <option value="yellow"/>
-        <option value="lime green"/>
+        <option value="limegreen"/>
         <option value="green"/>
         <option value="blue-green"/>
         <option value="cyan"/>
-        <option value="sky blue"/>
+        <option value="skyblue"/>
         <option value="blue"/>
         <option value="purple"/>
         <option value="magenta"/>
         <option value="pink"/>
       </datalist>
       <p>ボディの背景色</p>
-      <input list="body-background-colors" onChange={event => onStyleChange('td', 'background-color', event.target.value)}>
+      <input list="body-background-colors" value={props.style.getRules()['td']?.['background-color'] || ''} onChange={event => onStyleChange('td', 'background-color', event.target.value)}>
       </input>
       <datalist id="body-background-colors">
         <option value="white"/>
@@ -405,18 +406,18 @@ const StyleList: React.FC<StyleListProps> = (props) => {
         <option value="red"/>
         <option value="orange"/>
         <option value="yellow"/>
-        <option value="lime green"/>
+        <option value="limegreen"/>
         <option value="green"/>
         <option value="blue-green"/>
         <option value="cyan"/>
-        <option value="sky blue"/>
+        <option value="skyblue"/>
         <option value="blue"/>
         <option value="purple"/>
         <option value="magenta"/>
         <option value="pink"/>
       </datalist>
       <p>ボディの文字色</p>
-      <input list="body-char-colors" onChange={event => onStyleChange('td', 'color', event.target.value)}>
+      <input list="body-char-colors" value={props.style.getRules()['td']?.['color'] || ''} onChange={event => onStyleChange('td', 'color', event.target.value)}>
       </input>
       <datalist id="body-char-colors">
         <option value="white"/>
@@ -425,17 +426,37 @@ const StyleList: React.FC<StyleListProps> = (props) => {
         <option value="red"/>
         <option value="orange"/>
         <option value="yellow"/>
-        <option value="lime green"/>
+        <option value="limegreen"/>
         <option value="green"/>
         <option value="blue-green"/>
         <option value="cyan"/>
-        <option value="sky blue"/>
+        <option value="skyblue"/>
         <option value="blue"/>
         <option value="purple"/>
         <option value="magenta"/>
         <option value="pink"/>
       </datalist>
     </>
+  );
+}
+
+type PreviewTableProps = {
+  htmlString: string;
+}
+
+const PreviewTable: React.FC<PreviewTableProps> = (props) => {
+  const onPreviewClick = () => {
+    const newWindow = window.open('', '時間割プレビュー');
+    if (newWindow) {
+      newWindow.document.body.innerHTML = props.htmlString;
+      newWindow.focus();
+    }
+  }
+
+  return (
+    <button onClick={onPreviewClick}>
+      プレビュー
+    </button>
   );
 }
 
@@ -576,7 +597,8 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     const periodRangeSelects = <PeriodRangeSelects periodSize={table.getPeriodSize()} periodRangeSelects={table.getPeriodRanges()} onPeriodChange={this.updatePeriodRanges}/>;
     const itemInput = <ItemInput items={table.getItemStructure()} onItemCheckBoxChange={this.updateItemIsLink} onItemNameChange={this.updateItemName}/>;
     const editTable = <EditTable table={table} onFieldNameChange={this.updateFieldName} onItemValueChange={this.updateItemValue}/>;
-    const styleList = <StyleList onStyleChange={this.updateStyle}/>;
+    const styleList = <StyleList style={this.state.style} onStyleChange={this.updateStyle}/>;
+    const previewTable = <PreviewTable htmlString={this.state.table.toHTML(this.state.style.toString())}/>;
     const jsonDownloadButton = <JSONDownloadButton jsonStr={JSON.stringify({ table: this.state.table, style: this.state.style })}/>;
     const markdownDownloadButton = <MarkdownDownloadButton markdownStr={this.state.table.toMarkdown()}/>;
     const htmlDownloadButton = <HTMLDownloadButton htmlStr={this.state.table.toHTML(this.state.style.toString())}/>;
@@ -614,6 +636,11 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
           <h1>デザインの設定</h1>
           <p>HTMLのデザイン(色・罫線)を設定できます。</p>
           {styleList}
+        </div>
+        <div>
+          <h1>時間割をプレビューする</h1>
+          <p>クリックすると別ウィンドウを開きます。</p>
+          {previewTable}
         </div>
         <div>
           <h1>時間割データの保存</h1>

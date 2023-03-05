@@ -31,6 +31,10 @@ export namespace CSS {
       }
     }
 
+    public getRules(): Rules {
+      return this.rules;
+    }
+
     public toString(): string {
       let style_str = "";
       for (const selector in this.rules) {
