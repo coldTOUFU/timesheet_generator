@@ -10,10 +10,7 @@ export namespace TimeTableConst {
   export const DAY_OF_WEEK_CHARS = ["月", "火", "水", "木", "金", "土", "日"] as const;
   export const dayOfWeeks = [MON, TUE, WED, THU, FRI, SAT, SUN] as const;
 
-  export const periodMaxSize = 8;
+  export const periodMaxSize = 10;
   export const periodDefaultSize = 5;
   export const dowDefaultSize = 5;
-
-  /* jsでは時刻単体のクラスがないので、日付をbaseDateに固定した日時クラスで時刻を扱う。 */
-  export const baseDate = new Date("2000-01-01 00:00:00");
 }
