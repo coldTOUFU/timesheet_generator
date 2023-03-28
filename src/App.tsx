@@ -63,9 +63,9 @@ const LoadTableFile: React.FC<LoadTableFileProps> = (props) => {
 
   return (
     <>
-      <h2>JSONを読み込む</h2>
+      <h3>JSONを読み込む</h3>
       <input type="file" accept=".json" onChange={event => onJSONLoad(event.target.files?.[0])}/>
-      <h2>HTMLを読み込む</h2>
+      <h3>HTMLを読み込む</h3>
       <input type="file" accept=".html" onChange={event => onHTMLLoad(event.target.files?.[0])}/>
     </>
   );
@@ -253,19 +253,19 @@ const ItemInput: React.FC<ItemInputProps> = (props) => {
   return (
     <>
       <div>
-        <h3>項目1</h3>
+        <h4>項目1</h4>
         リンク有<input type="checkbox" checked={props.items[0].isLink} onChange={event => onItemCheckBoxChange(0, event.target.checked)}/>
         <br/>
         <input type="text" placeholder="表示名" value={props.items[0].name} onChange={event => onItemNameChange(0, event.target.value)}/>
       </div>
       <div>
-        <h3>項目2</h3>
+        <h4>項目2</h4>
         リンク有<input type="checkbox" checked={props.items[1].isLink} onChange={event => onItemCheckBoxChange(1, event.target.checked)}/>
         <br/>
         <input type="text" placeholder="表示名" value={props.items[1].name} onChange={event => onItemNameChange(1, event.target.value)}/>
       </div>
       <div>
-        <h3>項目3</h3>
+        <h4>項目3</h4>
         リンク有<input type="checkbox" checked={props.items[2].isLink} onChange={event => onItemCheckBoxChange(2, event.target.checked)}/>
         <br/>
         <input type="text" placeholder="表示名" value={props.items[2].name} onChange={event => onItemNameChange(2, event.target.value)}/>
@@ -357,85 +357,13 @@ const StyleList: React.FC<StyleListProps> = (props) => {
   return (
     <>
       <p>ヘッダの背景色</p>
-      <input list="header-background-colors" value={props.style.getRules()['th']?.['background-color'] || ''} onChange={event => onStyleChange('th', 'background-color', event.target.value)}>
-      </input>
-      <datalist id="header-background-colors">
-        <option value="white"/>
-        <option value="gray"/>
-        <option value="black"/>
-        <option value="red"/>
-        <option value="orange"/>
-        <option value="yellow"/>
-        <option value="limegreen"/>
-        <option value="green"/>
-        <option value="blue-green"/>
-        <option value="cyan"/>
-        <option value="skyblue"/>
-        <option value="blue"/>
-        <option value="purple"/>
-        <option value="magenta"/>
-        <option value="pink"/>
-      </datalist>
+      <input type="color" value={props.style.getRules()['th']?.['background-color'] || ''} onChange={event => onStyleChange('th', 'background-color', event.target.value)}/>
       <p>ヘッダの文字色</p>
-      <input list="header-char-colors" value={props.style.getRules()['th']?.['color'] || ''} onChange={event => onStyleChange('th', 'color', event.target.value)}>
-      </input>
-      <datalist id="header-char-colors">
-        <option value="white"/>
-        <option value="gray"/>
-        <option value="black"/>
-        <option value="red"/>
-        <option value="orange"/>
-        <option value="yellow"/>
-        <option value="limegreen"/>
-        <option value="green"/>
-        <option value="blue-green"/>
-        <option value="cyan"/>
-        <option value="skyblue"/>
-        <option value="blue"/>
-        <option value="purple"/>
-        <option value="magenta"/>
-        <option value="pink"/>
-      </datalist>
+      <input type="color" value={props.style.getRules()['th']?.['color'] || ''} onChange={event => onStyleChange('th', 'color', event.target.value)}/>
       <p>ボディの背景色</p>
-      <input list="body-background-colors" value={props.style.getRules()['td']?.['background-color'] || ''} onChange={event => onStyleChange('td', 'background-color', event.target.value)}>
-      </input>
-      <datalist id="body-background-colors">
-        <option value="white"/>
-        <option value="gray"/>
-        <option value="black"/>
-        <option value="red"/>
-        <option value="orange"/>
-        <option value="yellow"/>
-        <option value="limegreen"/>
-        <option value="green"/>
-        <option value="blue-green"/>
-        <option value="cyan"/>
-        <option value="skyblue"/>
-        <option value="blue"/>
-        <option value="purple"/>
-        <option value="magenta"/>
-        <option value="pink"/>
-      </datalist>
+      <input type="color" value={props.style.getRules()['td']?.['background-color'] || ''} onChange={event => onStyleChange('td', 'background-color', event.target.value)}/>
       <p>ボディの文字色</p>
-      <input list="body-char-colors" value={props.style.getRules()['td']?.['color'] || ''} onChange={event => onStyleChange('td', 'color', event.target.value)}>
-      </input>
-      <datalist id="body-char-colors">
-        <option value="white"/>
-        <option value="gray"/>
-        <option value="black"/>
-        <option value="red"/>
-        <option value="orange"/>
-        <option value="yellow"/>
-        <option value="limegreen"/>
-        <option value="green"/>
-        <option value="blue-green"/>
-        <option value="cyan"/>
-        <option value="skyblue"/>
-        <option value="blue"/>
-        <option value="purple"/>
-        <option value="magenta"/>
-        <option value="pink"/>
-      </datalist>
+      <input type="color" value={props.style.getRules()['td']?.['color'] || ''} onChange={event => onStyleChange('td', 'color', event.target.value)}/>
     </>
   );
 }
@@ -605,59 +533,59 @@ class TimeTableRenderer extends React.Component<{}, TimeTableRendererState> {
     return (
       <>
         <div>
-          <h1>時間割データの読込</h1>
+          <h2>時間割データの読込</h2>
           <p>過去に保存した時間割データを読み込めば、編集ができます。</p>
           {loadTableFile}
         </div>
         <div>
-          <h1>時間割の入力</h1>
+          <h2>時間割の入力</h2>
         </div>
         <div>
-          <h2>曜日</h2>
+          <h3>曜日</h3>
           {dowSizeSelect}
         </div>
         <div>
-          <h2>時限</h2>
+          <h3>時限</h3>
           {periodSizeSelect}
         </div>
         <div>
-          <h2>時限の範囲</h2>
+          <h3>時限の範囲</h3>
           {periodRangeSelects}
         </div>
         <div>
-          <h2>コマの項目</h2>
+          <h3>コマの項目</h3>
           {itemInput}
         </div>
         <div>
-          <h2>時間割の入力</h2>
+          <h3>時間割の入力</h3>
           {editTable}
         </div>
         <div>
-          <h1>デザインの設定</h1>
+          <h2>デザインの設定</h2>
           <p>HTMLのデザイン(色・罫線)を設定できます。</p>
           {styleList}
         </div>
         <div>
-          <h1>時間割をプレビューする</h1>
+          <h2>時間割をプレビューする</h2>
           <p>クリックすると別ウィンドウを開きます。</p>
           {previewTable}
         </div>
         <div>
-          <h1>時間割データの保存</h1>
+          <h2>時間割データの保存</h2>
           <p>時間割データは、JSON、Markdown、HTMLのいずれかの形式で保存できます。</p>
           <p>JSONまたはHTMLの場合、このページで読み込めば既存の時間割を編集できます。</p>
           <p>ただし、HTMLで読み込む場合はセルのリンクなし項目のプレースホルダが保存されません。ご了承ください。</p>
         </div>
         <div>
-          <h2>時間割をJSONで保存</h2>
+          <h3>時間割をJSONで保存</h3>
           {jsonDownloadButton}
         </div>
         <div>
-          <h2>時間割をMarkdownで保存</h2>
+          <h3>時間割をMarkdownで保存</h3>
           {markdownDownloadButton}
         </div>
         <div>
-          <h2>時間割をHTMLで保存</h2>
+          <h3>時間割をHTMLで保存</h3>
           {htmlDownloadButton}
         </div>
       </>
